@@ -1,13 +1,9 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import loginImg from '../../assets/payTime.png'
 
 export default function Login({Login, error}) {
     const [details, setDetails] = useState({name: "", email: "", password: ""});
-
-    const SignUp = (e) => {
-        e.preventDefault();
-        Login(details);
-    }
 
     const submitHandler = e => {
         e.preventDefault();
@@ -37,8 +33,12 @@ export default function Login({Login, error}) {
                     <input className='rounded-lg bg-white mt-2 p-2 shadow-lg shadow-slate-300 border-solid' type="password" name="password" id="password" onChange={e => setDetails({...details, password: e.target.value})} value={details.password}/>
                 </div>
                 {(error !== "") ? ( <div className="error">{error}</div>) : ""}
-                <button className='w-full my-5 py-2 bg-orange-500 shadow-lg shadow-orange-500/50 hover:shadow-orange-500/40 text-white font-semibold rounded-lg'>Completar Registro</button>
                 
+                <button className='w-full my-5 py-2 bg-orange-500 shadow-lg shadow-orange-500/50 hover:shadow-orange-500/40 text-white font-semibold rounded-lg'>Completar Registro</button>
+                <div>
+                    <Link to='/' className='text-center text-amber-500 font-bold'>¿Ya estás registrado? Inicia sesión aquí</Link>
+                </div>
+
             </form>
         </div>
 

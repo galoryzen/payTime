@@ -14,7 +14,9 @@
   },
   "scripts": {
     "start": "tsc && node dist/index.js",
-    "dev": "nodemon --watch src --exec ts-node src/index.ts"
+    "dev": "nodemon --watch src --exec ts-node src/index.ts",
+    "dbgenerate": "prisma generate && npx prisma migrate dev --name init",
+    "dbdelete": "npx prisma migrate reset"
   },
   "dependencies": {
     "@fastify/autoload": "^5.4.1",

@@ -9,3 +9,6 @@ Software Design Course Project: College Payment Gateaway
 
 ## Home page
 ![Home Page](readme/Home.png?raw=true)
+
+## Pay page
+![Pay Page](readme/Pay.png?raw=true)

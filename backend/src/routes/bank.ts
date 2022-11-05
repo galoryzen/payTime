@@ -45,8 +45,7 @@ async function routes(fastify: FastifyInstance, options: any){
         });
         
         if (!bank) {
-            reply.code(404);
-            return { message: 'Bank not found' };
+            return reply.notFound("Bank not found");
         }
         
         return bank;
@@ -75,12 +74,10 @@ async function routes(fastify: FastifyInstance, options: any){
                     name: request.body.name,
                 },
             });
-            reply.code(201);
-            return { message: 'Bank created' };
+            reply.send({ message: "Bank created" });
         } catch (error) {
-            reply.code(500);
             console.log(error);
-            return { message: 'Error creating bank' };
+            return reply.internalServerError("Error creating bank");
         }
     });
 }

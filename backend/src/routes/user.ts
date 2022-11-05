@@ -48,8 +48,7 @@ async function routes(fastify: FastifyInstance, options: any) {
         });
         
         if (!user) {
-            reply.code(404);
-            return { message: 'User not found' };
+            return reply.notFound("User not found");
         }
         
         return user;
@@ -82,7 +81,8 @@ async function routes(fastify: FastifyInstance, options: any) {
             return reply.status(200).send({ respond: 'User created' });
 
         } catch (error) {
-            return reply.status(500).send({ respond: 'Error creating user' });
+            console.log(error);
+            return reply.internalServerError("Error creating user");
         }
     });
 
@@ -118,8 +118,7 @@ async function routes(fastify: FastifyInstance, options: any) {
         });
         
         if (!user) {
-            reply.code(404);
-            return { message: 'User not found' };
+            return reply.notFound("User not found");
         }
 
         try {
@@ -136,7 +135,8 @@ async function routes(fastify: FastifyInstance, options: any) {
             return reply.status(200).send({ message: 'User updated' });
 
         } catch (error) {
-            return reply.status(500).send({ message: 'Error updating user' });
+            console.log(error);
+            return reply.internalServerError("Error updating user");
         }
     });
     
@@ -167,8 +167,7 @@ async function routes(fastify: FastifyInstance, options: any) {
         });
         
         if (!user) {
-            reply.code(404);
-            return { message: 'User not found' };
+            return reply.notFound("User not found");
         }
 
         try {
@@ -180,7 +179,8 @@ async function routes(fastify: FastifyInstance, options: any) {
             return reply.status(200).send({ message: 'User deleted' });
 
         } catch (error) {
-            return reply.status(500).send({ message: 'Error deleting user' });
+            console.log(error);
+            return reply.internalServerError("Error deleting user");
         }
     });
 
@@ -201,8 +201,7 @@ async function routes(fastify: FastifyInstance, options: any) {
         });
         
         if (!user) {
-            reply.code(404);
-            return { message: 'User not found' };
+            return reply.notFound("User not found");
         }
 
         try {
@@ -221,7 +220,7 @@ async function routes(fastify: FastifyInstance, options: any) {
             return transactions;
 
         } catch (error) {
-            return reply.status(500).send({ message: 'Error getting transactions' });
+            return reply.internalServerError("Error getting transactions");
         }
     });
 }

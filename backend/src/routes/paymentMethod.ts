@@ -66,8 +66,7 @@ async function routes(fastify: FastifyInstance, options: any){
         });
         
         if (!paymentMethod) {
-            reply.code(404);
-            return { message: 'PaymentMethod not found' };
+            return reply.notFound("PaymentMethod not found");
         }
         
         return paymentMethod;
@@ -105,8 +104,7 @@ async function routes(fastify: FastifyInstance, options: any){
         });
         
         if (!paymentMethod) {
-            reply.code(404);
-            return { message: 'PaymentMethod not created' };
+            return reply.notFound("PaymentMethod not found");
         }
         
         return { message: 'PaymentMethod created' };

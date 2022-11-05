@@ -1,6 +1,6 @@
 import Fastify from 'fastify';
 import autoLoad from '@fastify/autoload'
-
+import '@fastify/sensible'
 import path from 'path';
 
 const fastify = Fastify({ logger: true });

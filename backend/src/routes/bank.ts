@@ -15,7 +15,8 @@ async function routes(fastify: FastifyInstance, options: any){
                     name: Type.String(),
                 })),
             }
-        }
+        },
+        preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
         const banks = await server.prisma.bank.findMany();
         return banks;

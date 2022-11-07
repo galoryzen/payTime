@@ -8,7 +8,7 @@ async function routes(fastify: FastifyInstance, options: any){
     const server = fastify.withTypeProvider<TypeBoxTypeProvider>();
 
     //generate access token
-    server.post('/', {
+    server.post('/login', {
         schema: {
             summary: 'Generate access token',
             tags: ['Auth'],
@@ -36,18 +36,22 @@ async function routes(fastify: FastifyInstance, options: any){
             return reply.unauthorized('Invalid email or password');
         }
 
-        const isValid =  await bcrypt.compare(password, user.password);
+        // const isValid =  await bcrypt.compare(password, user.password);
+        const isValid = password === user.password;
 
         if (!isValid) {
             return reply.unauthorized('Invalid email or password');
         }
         const payload = {
-            id: user.id,
-            email: user.email,
-            isAdmin: user.isAdmin,
+            user: {
+                id: user.id,
+                email: user.email,
+                isAdmin: user.isAdmin,
+            }
         }
 
-        const token = await server.jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = server.jwt.sign(payload);
+        return { token };
     });
 
     //register
@@ -89,5 +93,7 @@ async function routes(fastify: FastifyInstance, options: any){
             },
         });
         return { message: 'User created successfully' };
-    }
+    });
 }
+
+export default routes;

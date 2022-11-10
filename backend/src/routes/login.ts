@@ -43,13 +43,10 @@ async function routes(fastify: FastifyInstance, options: any){
             return reply.unauthorized('Invalid email or password');
         }
         const payload = {
-            user: {
-                id: user.id,
-                email: user.email,
-                isAdmin: user.isAdmin,
-            }
+            "id": user.id,
+            "email": user.email,
+            "isAdmin": user.isAdmin,
         }
-
         const token = server.jwt.sign(payload);
         return { token };
     });

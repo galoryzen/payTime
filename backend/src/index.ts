@@ -16,8 +16,6 @@ const fastify = Fastify({ logger: true });
         dir: path.join(__dirname, 'plugins')
     });
 
-    fastify.addHook('onRequest', fastify.queryAllowed)
-
     await fastify.register(autoLoad, {
         dir: path.join(__dirname, 'routes')
     });

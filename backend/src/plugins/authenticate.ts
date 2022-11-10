@@ -19,9 +19,7 @@ const authPlugin = fp(async (fastify, opts) => {
 
     fastify.decorate('isAdmin', async (request: FastifyRequest, reply: FastifyReply) => {
         try{
-            //get user id from body
-            const id = request.user?.id
-
+            const id = request.user.id;
             const user = await fastify.prisma.user.findUnique({
                 where: {
                     id: id,

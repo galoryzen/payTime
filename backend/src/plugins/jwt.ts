@@ -7,15 +7,13 @@ const schema = Type.Object({
     JWT_SECRET: Type.String({ minLength: 5 }),
 })
 
-import "@fastify/jwt";
-
 declare module "@fastify/jwt" {
     interface FastifyJWT {
         user: {
-            id: number;
-            email: string;
-            isAdmin: boolean;
-        } | undefined
+            "id": number;
+            "email": string;
+            "isAdmin": boolean;
+        }
     }
 }
 

@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type, Static } from '@sinclair/typebox'
+import bcrypt from 'bcrypt';
 
 
 async function routes(fastify: FastifyInstance, options: any) {
@@ -10,6 +11,7 @@ async function routes(fastify: FastifyInstance, options: any) {
     server.get('/users', {
         schema: {
             tags: ['User'],
+            summary: 'Get all users',
             response: {
                 200: Type.Array(Type.Object({
                     id: Type.Number(),
@@ -17,7 +19,8 @@ async function routes(fastify: FastifyInstance, options: any) {
                     email: Type.String(),
                 })),
             }
-        }
+        },
+        preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
         const users = await server.prisma.user.findMany();
         return users;
@@ -26,6 +29,7 @@ async function routes(fastify: FastifyInstance, options: any) {
     server.get('/user/:id', {
         schema: {
             tags: ['User'],
+            summary: 'Get a user by id',
             params: Type.Object({
                 id: Type.Number(),
             }),
@@ -39,11 +43,42 @@ async function routes(fastify: FastifyInstance, options: any) {
                     message: Type.String(),
                 }),
             }
+        },
+        preValidation: [fastify.verifyAuth, fastify.isAdmin],
+    }, async (request, reply) => {
+        const asd = await server.prisma.user.findUnique({
+            where: {
+                id: Number(request.params.id),
+            },
+        });
+        
+        if (!asd) {
+            return reply.notFound("User not found");
         }
+        
+        return asd;
+    });
+    
+    server.get('/user', {
+        schema: {
+            tags: ['User'],
+            summary: 'Get logged user',
+            response: {
+                200: Type.Object({
+                    id: Type.Number(),
+                    name: Type.String(),
+                    email: Type.String(),
+                }),
+                404: Type.Object({
+                    message: Type.String(),
+                }),
+            }
+        },
+        preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
         const user = await server.prisma.user.findUnique({
             where: {
-                id: Number(request.params.id),
+                id: Number(request.user.id),
             },
         });
         
@@ -52,7 +87,7 @@ async function routes(fastify: FastifyInstance, options: any) {
         }
         
         return user;
-    });  
+    });
 
     server.post('/user', {
         schema: {
@@ -68,14 +103,18 @@ async function routes(fastify: FastifyInstance, options: any) {
                     respond: Type.String(),
                 }),
             }
-        }
+        },
+        preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
+        //encrypt password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(request.body.password, salt);
         try {
             await server.prisma.user.create({
                 data: {
                     name: request.body.name,
                     email: request.body.email,
-                    password: request.body.password,
+                    password: hashedPassword,
                 }
             });
             return reply.status(200).send({ respond: 'User created' });
@@ -158,7 +197,8 @@ async function routes(fastify: FastifyInstance, options: any) {
                     message: Type.String(),
                 }),
             }
-        }
+        },
+        preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
         const user = await server.prisma.user.findUnique({
             where: {
@@ -239,8 +279,10 @@ async function routes(fastify: FastifyInstance, options: any) {
                     message: Type.String(),
                 }),
             }
-        }
+        },
+        preValidation: [fastify.verifyAuth],
     }, async (request, reply) => {
+        console.log(request.user.id);
         const paymentMethods = await server.prisma.paymentMethod.findMany({
             where: {
                 userId: Number(request.user.id),
@@ -249,7 +291,8 @@ async function routes(fastify: FastifyInstance, options: any) {
                 bank: true,
             },
         });
-
+        console.log(paymentMethods);
+        console.log('\n')
         if (!paymentMethods) {
             return reply.notFound("PaymentMethod not found");
         }

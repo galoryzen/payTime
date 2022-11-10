@@ -50,47 +50,6 @@ async function routes(fastify: FastifyInstance, options: any){
         const token = server.jwt.sign(payload);
         return { token };
     });
-
-    //register
-    server.post('/register', {
-        schema: {
-            summary: 'Register a new user',
-            tags: ['Auth'],
-            body: Type.Object({
-                name: Type.String(),
-                email: Type.String(),
-                password: Type.String(),
-            }),
-            response: {
-                200: Type.Object({
-                    message: Type.String(),
-                }),
-                401: Type.Object({
-                    message: Type.String(),
-                }),
-            }
-        }
-    }, async (request, reply) => {
-        const { name, email, password } = request.body
-
-        const user = await server.prisma.user.findUnique({
-            where: {
-                email: email
-            },
-        });
-        if (user) {
-            return reply.unauthorized('Email already exists');
-        }
-
-        const newUser = await server.prisma.user.create({
-            data: {
-                name: name,
-                email: email,
-                password: await bcrypt.hash(password, 10),
-            },
-        });
-        return { message: 'User created successfully' };
-    });
 }
 
 export default routes;

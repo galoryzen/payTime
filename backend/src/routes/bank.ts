@@ -37,7 +37,8 @@ async function routes(fastify: FastifyInstance, options: any){
                     message: Type.String(),
                 }),
             }
-        }
+        },
+        preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
         const bank = await server.prisma.bank.findUnique({
             where: {
@@ -67,7 +68,8 @@ async function routes(fastify: FastifyInstance, options: any){
                     message: Type.String(),
                 }),
             }
-        }
+        },
+        preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
         try {
             await server.prisma.bank.create({

@@ -184,44 +184,84 @@ async function routes(fastify: FastifyInstance, options: any) {
         }
     });
 
-    server.get('/user/:id/transactions', {
+    server.get('/user/transactions', {
         schema: {
-            summary: 'Get all transactions of a user',
-            tags: ['User'],
-            params: Type.Object({
-                id: Type.Number(),
-            }),
-            
-        }
+            tags: ['Transaction'],
+            summary: 'Get all transactions of the logged user',
+            response: {
+                200: Type.Array(Type.Object({
+                    id: Type.Number(),
+                    amount: Type.Number(),
+                    description: Type.String(),
+                    status: Type.String(),
+                    createdAt: Type.Any(),
+                })),
+                404: Type.Object({
+                    message: Type.String(),
+                }),
+            }
+        },
+        preValidation: [fastify.verifyAuth],
     }, async (request, reply) => {
-        const user = await server.prisma.user.findUnique({
+        const transactions = await server.prisma.transaction.findMany({
             where: {
-                id: Number(request.params.id),
+                userId: Number(request.user.id),
+            },
+            select: {
+                id: true,
+                amount: true,
+                description: true,
+                status: true,
+                createdAt: true,
+            },
+            orderBy: {
+                createdAt: 'desc',
             },
         });
         
-        if (!user) {
-            return reply.notFound("User not found");
+        if (!transactions) {
+            return reply.notFound("Transactions not found");
+        }
+        
+        return transactions;
+    });
+
+    server.get('/user/paymentMethods', {
+        schema: {
+            tags: ['PaymentMethod'],
+            summary: 'Get all payment methods of the logged user',
+            response: {
+                200: Type.Array(Type.Object({
+                    cardNumber: Type.String(),
+                    bankName: Type.String(),
+                })),
+                404: Type.Object({
+                    message: Type.String(),
+                }),
+            }
+        }
+    }, async (request, reply) => {
+        const paymentMethods = await server.prisma.paymentMethod.findMany({
+            where: {
+                userId: Number(request.user.id),
+            },
+            include: {
+                bank: true,
+            },
+        });
+
+        if (!paymentMethods) {
+            return reply.notFound("PaymentMethod not found");
         }
 
-        try {
-            const transactions = await server.prisma.transaction.findMany({
-                where: {
-                    userId: Number(request.params.id),
-                },
-                include: {
-                    paymentMethod: {
-                        include: {
-                            bank: true,
-                        }
-                    }
-                }
-            });
-            return transactions;
+        const paymentMethodsResponse = paymentMethods.map((paymentMethod) => {
+            return {
+                cardNumber: paymentMethod.cardNumber,
+                bankName: paymentMethod.bank.name,
+            }
+        });
 
-        } catch (error) {
-            return reply.internalServerError("Error getting transactions");
-        }
+        return paymentMethodsResponse;
     });
 }
 

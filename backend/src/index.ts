@@ -7,7 +7,6 @@ import fastifyJwt from '@fastify/jwt';
 async function main() {
 const fastify = Fastify({ logger: true });
 
-//register @fastify/auth
     fastify.register(require('@fastify/auth'));
 
     fastify.register(require('@fastify/sensible'));

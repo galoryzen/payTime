@@ -12,6 +12,7 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "PaymentMethod" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "cardNumber" TEXT NOT NULL,
     "balance" INTEGER NOT NULL,
     "status" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -49,3 +50,6 @@ CREATE TABLE "Transaction" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PaymentMethod_cardNumber_key" ON "PaymentMethod"("cardNumber");

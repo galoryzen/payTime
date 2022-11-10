@@ -156,7 +156,50 @@ async function routes(fastify: FastifyInstance, options: any){
 
         reply.code(201);
         return { message: 'Transaction Approved' };
-    });         
+    });
+    
+    server.get('/transactions/user/:userid', {
+        schema: {
+            tags: ['Transaction'],
+            params: Type.Object({
+                userid: Type.Number(),
+            }),
+            response: {
+                200: Type.Array(Type.Object({
+                    id: Type.Number(),
+                    amount: Type.Number(),
+                    description: Type.String(),
+                    status: Type.String(),
+                    createdAt: Type.Any(),
+                })),
+                404: Type.Object({
+                    message: Type.String(),
+                }),
+            }
+        }
+    }, async (request, reply) => {
+        const transactions = await server.prisma.transaction.findMany({
+            where: {
+                userId: Number(request.params.userid),
+            },
+            select: {
+                id: true,
+                amount: true,
+                description: true,
+                status: true,
+                createdAt: true,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+        
+        if (!transactions) {
+            return reply.notFound("Transactions not found");
+        }
+        
+        return transactions;
+    });
 
 }
 

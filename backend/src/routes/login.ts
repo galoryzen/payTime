@@ -36,8 +36,7 @@ async function routes(fastify: FastifyInstance, options: any){
             return reply.unauthorized('Invalid email or password');
         }
 
-        // const isValid =  await bcrypt.compare(password, user.password);
-        const isValid = password === user.password;
+        const isValid = await bcrypt.compare(password, user.password);
 
         if (!isValid) {
             return reply.unauthorized('Invalid email or password');

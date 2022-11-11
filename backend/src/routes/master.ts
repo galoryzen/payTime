@@ -22,13 +22,38 @@ async function routes(fastify: FastifyInstance, options: any){
         await server.prisma.user.deleteMany();
         await server.prisma.bank.deleteMany();
         await server.prisma.transaction.deleteMany();
+        await server.prisma.service.deleteMany();
+
+        await server.prisma.service.create({
+            data: {
+                id: 1,
+                name: "query",
+                status: true
+            }
+        });
+
+        await server.prisma.service.create({
+            data: {
+                id: 2,
+                name: "payment",
+                status: true
+            }
+        });
+
+        await server.prisma.service.create({
+            data: {
+                id: 3,
+                name: "balance",
+                status: true
+            }
+        });
 
         await server.prisma.user.create({
             data: {
                 id: 1,
                 name: "admin",
                 email: "admin",
-                password: "admin",
+                password: await bcrypt.hash("admin", 10),
                 isAdmin: true,
             },
         });
@@ -38,7 +63,7 @@ async function routes(fastify: FastifyInstance, options: any){
                 id: 2,
                 name: "user",
                 email: "user",
-                password: "user",
+                password: await bcrypt.hash("admin", 10),
                 isAdmin: false,
             },
         });

@@ -17,7 +17,8 @@ async function routes(fastify: FastifyInstance, options: any){
                     status: Type.String(),
                 })),
             }
-        }
+        },
+        preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
         const transactions = await server.prisma.transaction.findMany();
         return transactions;
@@ -40,7 +41,8 @@ async function routes(fastify: FastifyInstance, options: any){
                     message: Type.String(),
                 }),
             }
-        }
+        },
+        preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
         const transaction = await server.prisma.transaction.findUnique({
             where: {
@@ -73,7 +75,9 @@ async function routes(fastify: FastifyInstance, options: any){
                     message: Type.String(),
                 }),
             }
-        }
+        },
+        onRequest: fastify.paymentAllowed,
+        preValidation: fastify.verifyAuth,
     }, async (request, reply) => {
         const paymentMethod = await server.prisma.paymentMethod.findUnique({
             where: {
@@ -161,6 +165,7 @@ async function routes(fastify: FastifyInstance, options: any){
     server.get('/transactions/user/:userid', {
         schema: {
             tags: ['Transaction'],
+            summary: 'Get all transactions of a user',
             params: Type.Object({
                 userid: Type.Number(),
             }),
@@ -176,7 +181,8 @@ async function routes(fastify: FastifyInstance, options: any){
                     message: Type.String(),
                 }),
             }
-        }
+        },
+        preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
         const transactions = await server.prisma.transaction.findMany({
             where: {

@@ -3,11 +3,13 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import fp from 'fastify-plugin';
 //import Type
 import { Type, Static } from '@sinclair/typebox';
+import prisma from './prisma';
 
 declare module 'fastify' {
     interface FastifyInstance {
         queryAllowed: () => Promise<void>,
         paymentAllowed: () => Promise<void>,
+        balanceAllowed: () => Promise<void>,
     }
 }
 
@@ -16,39 +18,58 @@ const paramsSchema = Type.Object({
     id: Type.Number(),
 });
 
-export default fp(async (fastify, opts) => {    
-
-
+export default fp(async (fastify, opts) => { 
+    //Check if query is allowed for user   
     fastify.decorate('queryAllowed', async (request: FastifyRequest, reply: FastifyReply) => {
-        const { id } = request.params as Static<typeof paramsSchema>;
-        //get payment method an bring bank id
-        const paymentMethod = await fastify.prisma.paymentMethod.findUnique({
+        const status = await fastify.prisma.service.findUnique({
             where: {
-                id: id,
-            },
-            include: {
-                bank: true,
-            },
-        });
-        if (!paymentMethod) {
-            return reply.notFound("Payment method not found");
-        }
-
-        const queryAllowed = await fastify.prisma.bank.findUnique({
-            where: {
-                id: paymentMethod.bank.id,
+                name: "query"
             },
             select: {
-                queryStatus: true,
-            },
+                status: true
+            }
         });
-        
-        if (!queryAllowed) {
-            return reply.notFound("Bank not found");
+        if(!status){
+            return reply.notFound("Service not found");
         }
+        if(!status.status){
+            reply.unauthorized("Service is not available")
+        }
+    })
 
-        if (!queryAllowed.queryStatus) {
-            return reply.unauthorized("Service not available");
+    //Check if payment is allowed for user
+    fastify.decorate('paymentAllowed', async (request: FastifyRequest, reply: FastifyReply) => {
+        const status = await fastify.prisma.service.findUnique({
+            where: {
+                name: "payment"
+            },
+            select: {
+                status: true
+            }
+        });
+        if(!status){
+            return reply.notFound("Service not found");
+        }
+        if(!status.status){
+            reply.unauthorized("Service is not available")
+        }
+    })
+
+    //Check if balance query is allowed for user
+    fastify.decorate('balanceAllowed', async (request: FastifyRequest, reply: FastifyReply) => {
+        const status = await fastify.prisma.service.findUnique({
+            where: {
+                name: "balance"
+            },
+            select: {
+                status: true
+            }
+        });
+        if(!status){
+            return reply.notFound("Service not found");
+        }
+        if(!status.status){
+            reply.unauthorized("Service is not available")
         }
     })
 })

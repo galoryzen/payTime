@@ -74,7 +74,7 @@ async function routes(fastify: FastifyInstance, options: any) {
                 }),
             }
         },
-        preValidation: [fastify.verifyAuth, fastify.isAdmin],
+        preValidation: [fastify.verifyAuth],
     }, async (request, reply) => {
         const user = await server.prisma.user.findUnique({
             where: {
@@ -106,9 +106,7 @@ async function routes(fastify: FastifyInstance, options: any) {
         },
         preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
-        //encrypt password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(request.body.password, salt);
+        const hashedPassword = await bcrypt.hash(request.body.password, 10);
         try {
             await server.prisma.user.create({
                 data: {
@@ -148,7 +146,8 @@ async function routes(fastify: FastifyInstance, options: any) {
                     message: Type.String(),
                 }),
             }
-        }
+        },
+        preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
         const user = await server.prisma.user.findUnique({
             where: {
@@ -241,6 +240,7 @@ async function routes(fastify: FastifyInstance, options: any) {
                 }),
             }
         },
+        onRequest: [fastify.queryAllowed],
         preValidation: [fastify.verifyAuth],
     }, async (request, reply) => {
         const transactions = await server.prisma.transaction.findMany({
@@ -280,6 +280,7 @@ async function routes(fastify: FastifyInstance, options: any) {
                 }),
             }
         },
+        onRequest: [fastify.queryAllowed],
         preValidation: [fastify.verifyAuth],
     }, async (request, reply) => {
         console.log(request.user.id);

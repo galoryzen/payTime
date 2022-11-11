@@ -43,8 +43,6 @@ model Bank {
     paymentMethods PaymentMethod[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    queryStatus Boolean @default(true)
-    payStatus Boolean @default(true)
 }
 
 model Transaction {
@@ -58,4 +56,12 @@ model Transaction {
     userId Int
     paymentMethod PaymentMethod @relation(fields: [paymentMethodId], references: [id])
     paymentMethodId Int
+}
+
+model Service {
+    id Int @id @default(autoincrement())
+    name String @unique
+    status Boolean @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }

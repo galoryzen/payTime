@@ -94,7 +94,8 @@ async function routes(fastify: FastifyInstance, options: any){
                     message: Type.String(),
                 }),
             }
-        }
+        },
+        preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
         const paymentMethod = await server.prisma.paymentMethod.create({
             data: {
@@ -112,6 +113,41 @@ async function routes(fastify: FastifyInstance, options: any){
         }
         
         return { message: 'PaymentMethod created' };
+    });
+
+    server.post('/paymentMethod/user', {
+        schema: {
+            summary: 'Create a new paymentMethod',
+            tags: ['PaymentMethod'],
+            body: Type.Object({
+                tipo: Type.String(),
+                cardNumber: Type.String(),
+                bankId: Type.Number(),
+            }),
+            response: {
+                201: Type.Object({
+                    message: Type.String(),
+                }),
+                404: Type.Object({
+                    message: Type.String(),
+                }),
+            }
+        },
+        preValidation: [fastify.verifyAuth],
+    }, async (request, reply) => {
+        //verify if credit card number is valid
+        
+
+        const paymentMethod = await server.prisma.paymentMethod.create({
+            data: {
+                balance: 0,
+                status: false,
+                tipo: request.body.tipo,
+                cardNumber: request.body.cardNumber,
+                bankId: request.body.bankId,
+                userId: request.user.id,
+            },
+        });
     });
 
     server.get('/paymentMethod/user/:userid', {

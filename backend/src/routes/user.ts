@@ -273,6 +273,7 @@ async function routes(fastify: FastifyInstance, options: any) {
             response: {
                 200: Type.Array(Type.Object({
                     cardNumber: Type.String(),
+                    balance: Type.Number(),
                     bankName: Type.String(),
                 })),
                 404: Type.Object({
@@ -292,8 +293,7 @@ async function routes(fastify: FastifyInstance, options: any) {
                 bank: true,
             },
         });
-        console.log(paymentMethods);
-        console.log('\n')
+
         if (!paymentMethods) {
             return reply.notFound("PaymentMethod not found");
         }
@@ -301,6 +301,7 @@ async function routes(fastify: FastifyInstance, options: any) {
         const paymentMethodsResponse = paymentMethods.map((paymentMethod) => {
             return {
                 cardNumber: paymentMethod.cardNumber,
+                balance: paymentMethod.balance,
                 bankName: paymentMethod.bank.name,
             }
         });

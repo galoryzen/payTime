@@ -107,6 +107,8 @@ async function routes(fastify: FastifyInstance, options: any){
                 },
             });
             return reply.badRequest("Rejected, payment method is disabled");
+        } else if (request.body.amount > 0){
+            return reply.badRequest("Payment amount must be greater than 0")
         }
 
         if (paymentMethod.balance < request.body.amount) {

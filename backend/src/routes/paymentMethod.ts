@@ -58,6 +58,7 @@ async function routes(fastify: FastifyInstance, options: any){
         },
         preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
+        
         const paymentMethod = await server.prisma.paymentMethod.findUnique({
             where: {
                 id: Number(request.params.id),
@@ -97,6 +98,11 @@ async function routes(fastify: FastifyInstance, options: any){
         },
         preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
+        //verify if payment method is Visa, Mastercard or Amex
+        if(request.body.cardNumber.substring(0,1) != '4' && request.body.cardNumber.substring(0,1) != '5' && request.body.cardNumber.substring(0,1) != '3'){
+            return reply.forbidden("Payment method must be Visa, Mastercard or Amex");
+        }
+
         const paymentMethod = await server.prisma.paymentMethod.create({
             data: {
                 balance: request.body.balance,
@@ -136,6 +142,9 @@ async function routes(fastify: FastifyInstance, options: any){
         preValidation: [fastify.verifyAuth],
     }, async (request, reply) => {
         //verify if credit card number is valid
+        if(request.body.cardNumber.substring(0,1) != '4' && request.body.cardNumber.substring(0,1) != '5' && request.body.cardNumber.substring(0,1) != '3'){
+            return reply.forbidden("Payment method must be Visa, Mastercard or Amex");
+        }
         
 
         const paymentMethod = await server.prisma.paymentMethod.create({

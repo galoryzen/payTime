@@ -44,7 +44,8 @@ async function routes(fastify: FastifyInstance, options: any) {
                 }),
             }
         },
-        preValidation: [fastify.verifyAuth, fastify.isAdmin],
+        preValidation: [fastify.verifyAuth],
+        preHandler: [fastify.isOwner],
     }, async (request, reply) => {
         const asd = await server.prisma.user.findUnique({
             where: {
@@ -58,37 +59,8 @@ async function routes(fastify: FastifyInstance, options: any) {
         
         return asd;
     });
-    
-    server.get('/user', {
-        schema: {
-            tags: ['User'],
-            summary: 'Get logged user',
-            response: {
-                200: Type.Object({
-                    id: Type.Number(),
-                    name: Type.String(),
-                    email: Type.String(),
-                }),
-                404: Type.Object({
-                    message: Type.String(),
-                }),
-            }
-        },
-        preValidation: [fastify.verifyAuth],
-    }, async (request, reply) => {
-        const user = await server.prisma.user.findUnique({
-            where: {
-                id: Number(request.user.id),
-            },
-        });
-        
-        if (!user) {
-            return reply.notFound("User not found");
-        }
-        
-        return user;
-    });
 
+    //only admins can create users for this app
     server.post('/user', {
         schema: {
             summary: 'Create a new user',
@@ -147,7 +119,8 @@ async function routes(fastify: FastifyInstance, options: any) {
                 }),
             }
         },
-        preValidation: [fastify.verifyAuth, fastify.isAdmin],
+        preValidation: [fastify.verifyAuth],
+        preHandler: [fastify.isOwner],
     }, async (request, reply) => {
         const user = await server.prisma.user.findUnique({
             where: {
@@ -221,92 +194,6 @@ async function routes(fastify: FastifyInstance, options: any) {
             console.log(error);
             return reply.internalServerError("Error deleting user");
         }
-    });
-
-    server.get('/user/transactions', {
-        schema: {
-            tags: ['Transaction'],
-            summary: 'Get all transactions of the logged user',
-            response: {
-                200: Type.Array(Type.Object({
-                    id: Type.Number(),
-                    amount: Type.Number(),
-                    description: Type.String(),
-                    status: Type.String(),
-                    createdAt: Type.Any(),
-                })),
-                404: Type.Object({
-                    message: Type.String(),
-                }),
-            }
-        },
-        onRequest: [fastify.queryAllowed],
-        preValidation: [fastify.verifyAuth],
-    }, async (request, reply) => {
-        const transactions = await server.prisma.transaction.findMany({
-            where: {
-                userId: Number(request.user.id),
-            },
-            select: {
-                id: true,
-                amount: true,
-                description: true,
-                status: true,
-                createdAt: true,
-            },
-            orderBy: {
-                createdAt: 'desc',
-            },
-        });
-        
-        if (!transactions) {
-            return reply.notFound("Transactions not found");
-        }
-        
-        return transactions;
-    });
-
-    server.get('/user/paymentMethods', {
-        schema: {
-            tags: ['PaymentMethod'],
-            summary: 'Get all payment methods of the logged user',
-            response: {
-                200: Type.Array(Type.Object({
-                    cardNumber: Type.String(),
-                    balance: Type.Number(),
-                    bankName: Type.String(),
-                })),
-                404: Type.Object({
-                    message: Type.String(),
-                }),
-            }
-        },
-        onRequest: [fastify.queryAllowed],
-        preValidation: [fastify.verifyAuth],
-    }, async (request, reply) => {
-        console.log(request.user.id);
-        const paymentMethods = await server.prisma.paymentMethod.findMany({
-            where: {
-                userId: Number(request.user.id),
-            },
-            include: {
-                bank: true,
-            },
-        });
-
-        if (!paymentMethods) {
-            return reply.notFound("PaymentMethod not found");
-        }
-
-        const paymentMethodsResponse = paymentMethods.map((paymentMethod) => {
-            return {
-                cardNumber: paymentMethod.cardNumber,
-                balance: paymentMethod.balance,
-                bankName: paymentMethod.bank.name,
-            }
-        });
-
-        return paymentMethodsResponse;
     });
 }
 

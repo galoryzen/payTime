@@ -57,6 +57,53 @@ async function routes(fastify: FastifyInstance, options: any){
         return transaction;
     });
 
+    server.get('/transaction/user/:id', {
+        schema: {
+            tags: ['Transaction'],
+            summary: 'Get all transactions of the logged user',
+            params: Type.Object({
+                id: Type.Number(),
+            }),
+            response: {
+                200: Type.Array(Type.Object({
+                    id: Type.Number(),
+                    amount: Type.Number(),
+                    description: Type.String(),
+                    status: Type.String(),
+                    createdAt: Type.Any(),
+                })),
+                404: Type.Object({
+                    message: Type.String(),
+                }),
+            }
+        },
+        onRequest: [fastify.queryAllowed],
+        preValidation: [fastify.verifyAuth],
+        preHandler: [fastify.isOwner],
+    }, async (request, reply) => {
+        const transactions = await server.prisma.transaction.findMany({
+            where: {
+                userId: Number(request.params.id),
+            },
+            select: {
+                id: true,
+                amount: true,
+                description: true,
+                status: true,
+                createdAt: true,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+        
+        if (!transactions) {
+            return reply.notFound("Transactions not found");
+        }
+        
+        return transactions;
+    });
+
     server.post('/transaction', {
         schema: {
             summary: 'Create a new transaction',
@@ -79,6 +126,11 @@ async function routes(fastify: FastifyInstance, options: any){
         onRequest: fastify.paymentAllowed,
         preValidation: fastify.verifyAuth,
     }, async (request, reply) => {
+        //verify if userId is the same as the logged user or if the logged user is admin
+        if (request.body.userId !== request.user.id && !request.user.isAdmin) {
+            return reply.badRequest("You can't create a transaction for another user");
+        }
+
         const paymentMethod = await server.prisma.paymentMethod.findUnique({
             where: {
                 id: Number(request.body.paymentMethodId),
@@ -162,51 +214,6 @@ async function routes(fastify: FastifyInstance, options: any){
 
         reply.code(201);
         return { message: 'Transaction Approved' };
-    });
-    
-    server.get('/transactions/user/:userid', {
-        schema: {
-            tags: ['Transaction'],
-            summary: 'Get all transactions of a user',
-            params: Type.Object({
-                userid: Type.Number(),
-            }),
-            response: {
-                200: Type.Array(Type.Object({
-                    id: Type.Number(),
-                    amount: Type.Number(),
-                    description: Type.String(),
-                    status: Type.String(),
-                    createdAt: Type.Any(),
-                })),
-                404: Type.Object({
-                    message: Type.String(),
-                }),
-            }
-        },
-        preValidation: [fastify.verifyAuth, fastify.isAdmin],
-    }, async (request, reply) => {
-        const transactions = await server.prisma.transaction.findMany({
-            where: {
-                userId: Number(request.params.userid),
-            },
-            select: {
-                id: true,
-                amount: true,
-                description: true,
-                status: true,
-                createdAt: true,
-            },
-            orderBy: {
-                createdAt: 'desc',
-            },
-        });
-        
-        if (!transactions) {
-            return reply.notFound("Transactions not found");
-        }
-        
-        return transactions;
     });
 
 }

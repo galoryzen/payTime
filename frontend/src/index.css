@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.my-react-select-container .my-react-select__input-container,
+.my-react-select-container .my-react-select__placeholder,
+.my-react-select-container .my-react-select__single-value {
+  @apply text-black dark:text-white;
+}
+
+@layer base {
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}

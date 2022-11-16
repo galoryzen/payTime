@@ -1,4 +1,3 @@
-import { PrismaClient } from '@prisma/client';
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type, Static } from '@sinclair/typebox'
@@ -63,7 +62,7 @@ async function routes(fastify: FastifyInstance, options: any){
                 id: 2,
                 name: "user",
                 email: "user",
-                password: await bcrypt.hash("admin", 10),
+                password: await bcrypt.hash("user", 10),
                 isAdmin: false,
             },
         });
@@ -71,21 +70,14 @@ async function routes(fastify: FastifyInstance, options: any){
         await server.prisma.bank.create({
             data: {
                 id: 1,
-                name: "Bancolombia",
+                name: "West Bank",
             },
         });
         
         await server.prisma.bank.create({
             data: {
                 id: 2,
-                name: "Davivienda",
-            },
-        });
-
-        await server.prisma.bank.create({
-            data: {
-                id: 3,
-                name: "Banco de Bogotá",
+                name: "East Bank",
             },
         });
 
@@ -93,8 +85,8 @@ async function routes(fastify: FastifyInstance, options: any){
         await server.prisma.paymentMethod.create({
             data: {
                 id: 1,
-                cardNumber: "123456789",
-                tipo: "CREDIT",
+                cardNumber: "371231231231231",
+                tipo: "Credito AmEx",
                 bankId: 1,
                 balance: 1000000,
                 userId: 1,
@@ -104,8 +96,8 @@ async function routes(fastify: FastifyInstance, options: any){
         await server.prisma.paymentMethod.create({
             data: {
                 id: 2,
-                cardNumber: "530654321",
-                tipo: "DEBIT",
+                cardNumber: "5123123123123123",
+                tipo: "Debito MasterCard",
                 bankId: 2,
                 balance: 500000,
                 userId: 1,
@@ -115,9 +107,9 @@ async function routes(fastify: FastifyInstance, options: any){
         await server.prisma.paymentMethod.create({
             data: {
                 id: 3,
-                cardNumber: "987654321",
-                tipo: "CREDIT",
-                bankId: 3,
+                cardNumber: "4111111111111111",
+                tipo: "Credito Visa",
+                bankId: 1,
                 balance: 1000000,
                 userId: 2,
             },

@@ -1,9 +1,5 @@
-import jwt, { FastifyJWTOptions } from '@fastify/jwt';
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import fp from 'fastify-plugin';
-//import Type
-import { Type, Static } from '@sinclair/typebox';
-import prisma from './prisma';
 
 declare module 'fastify' {
     interface FastifyInstance {
@@ -12,11 +8,6 @@ declare module 'fastify' {
         balanceAllowed: () => Promise<void>,
     }
 }
-
-//params schema
-const paramsSchema = Type.Object({
-    id: Type.Number(),
-});
 
 export default fp(async (fastify, opts) => { 
     //Check if query is allowed for user   

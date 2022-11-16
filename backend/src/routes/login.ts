@@ -1,4 +1,3 @@
-import { PrismaClient } from '@prisma/client';
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type, Static } from '@sinclair/typebox'

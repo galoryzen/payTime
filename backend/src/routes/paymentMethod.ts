@@ -44,9 +44,12 @@ async function routes(fastify: FastifyInstance, options: any){
             response: {
                 200: Type.Object({
                     id: Type.Number(),
+                    name: Type.String(),
                     balance: Type.Number(),
                     status: Type.Boolean(),
                     tipo: Type.String(),
+                    provider: Type.String(),
+                    expiryDate: Type.String({ format: 'date' }),
                     cardNumber: Type.String(),
                     bank: Type.Object({
                         id: Type.Number(),
@@ -87,8 +90,11 @@ async function routes(fastify: FastifyInstance, options: any){
             }),
             response: {
                 200: Type.Array(Type.Object({
+                    id: Type.Number(),
+                    name: Type.String(),
                     cardNumber: Type.String(),
-                    balance: Type.Number(),
+                    provider: Type.String(),
+                    expiryDate: Type.String({ format: 'date' }),
                     bankName: Type.String(),
                 })),
                 404: Type.Object({
@@ -114,8 +120,11 @@ async function routes(fastify: FastifyInstance, options: any){
 
         const paymentMethodsResponse = paymentMethods.map((paymentMethod) => {
             return {
+                id: paymentMethod.id,
+                name: paymentMethod.name,
                 cardNumber: paymentMethod.cardNumber,
-                balance: paymentMethod.balance,
+                provider: paymentMethod.provider,
+                expiryDate: paymentMethod.expiryDate,
                 bankName: paymentMethod.bank.name,
             }
         });

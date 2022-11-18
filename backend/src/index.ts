@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import autoLoad from '@fastify/autoload'
 import '@fastify/sensible'
 import path from 'path';
+import cors from '@fastify/cors';
 import fastifyJwt from '@fastify/jwt';
 
 async function main() {
@@ -10,6 +11,10 @@ async function main() {
 
     fastify.register(require('@fastify/sensible'));
 
+    await fastify.register(cors,{
+        credentials: true,
+        origin: 'http://localhost:3001',
+    })
     await fastify.register(autoLoad, {
         dir: path.join(__dirname, 'plugins')
     });

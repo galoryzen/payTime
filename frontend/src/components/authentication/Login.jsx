@@ -1,13 +1,27 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios';
 import loginImg from '../../assets/payTime.png'
 
 function Login() {
-    const [email, setEmail] = useState('');
+    const [user, setUser] = useState('');
     const [password, setPassword] = useState('');
+    const [token, setToken] = useState();
 
-    const submitHandler = e => {
+    const submitHandler = async e => {
         e.preventDefault();
+        console.log(user, password);
+        axios.post('http://localhost:3000/login', {
+            email: user,
+            password: password
+        },
+        {
+            withCredentials: true
+        })
+        .then(res => {
+            console.log(res.data);
+            setToken(res.data.token);
+        })
     }
 
     return (
@@ -22,7 +36,7 @@ function Login() {
                 <h2 className='text-4xl dark:text-cyan-800 font-bold text-center shadow-slate-300'>Inicia Sesión</h2>
                 <div className='flex flex-col text-gray-700 py-2'>
                     <label htmlFor="email">Email: </label>
-                    <input className='rounded-lg bg-white mt-2 p-2 shadow-lg shadow-slate-300 border-solid' type="email" name="email" value={email} onChange={(e)=>setEmail(e.target.value)} id="email" />
+                    <input className='rounded-lg bg-white mt-2 p-2 shadow-lg shadow-slate-300 border-solid' type="user" name="user" value={user} onChange={(e)=>setUser(e.target.value)} id="user" />
                 </div>
                 <div className='flex flex-col text-gray-700 py-2'>
                     <label htmlFor="password">Contraseña: </label>

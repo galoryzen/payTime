@@ -18,6 +18,6 @@ declare module "@fastify/jwt" {
 }
 
 export default fp<FastifyJWTOptions>(async (fastify, opts) => {
-    const { JWT_SECRET: secret } = envSchema({ schema }) as Static<typeof schema>
+    const { JWT_SECRET: secret } = envSchema({ schema, dotenv:true }) as Static<typeof schema>
     fastify.register(jwt, { ... opts, ...{ secret } })
 })

@@ -12,11 +12,15 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "PaymentMethod" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
     "cardNumber" TEXT NOT NULL,
     "balance" INTEGER NOT NULL,
     "status" BOOLEAN NOT NULL DEFAULT false,
+    "provider" TEXT NOT NULL,
+    "CVV" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
+    "expiryDate" TEXT NOT NULL,
     "tipo" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
     "bankId" INTEGER NOT NULL,

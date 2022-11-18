@@ -7,7 +7,6 @@ import fastifyJwt from '@fastify/jwt';
 async function main() {
     const fastify = Fastify({ logger: true });
 
-    fastify.register(require('@fastify/auth'));
 
     fastify.register(require('@fastify/sensible'));
 
@@ -18,6 +17,8 @@ async function main() {
     await fastify.register(autoLoad, {
         dir: path.join(__dirname, 'routes')
     });
+
+    fastify.register(require('@fastify/auth'));
 
     fastify.listen({ port: 3000 }, function (err: any, address: any) {
         if (err) {

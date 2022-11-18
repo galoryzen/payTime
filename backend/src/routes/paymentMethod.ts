@@ -15,6 +15,9 @@ async function routes(fastify: FastifyInstance, options: any){
                     status: Type.Boolean(),
                     tipo: Type.String(),
                     cardNumber: Type.String(),
+                    expiryDate: Type.String({ format: 'date' }),
+                    CVV: Type.String(),
+                    name: Type.String(),
                     bank: Type.Object({
                         id: Type.Number(),
                         name: Type.String(),
@@ -93,11 +96,9 @@ async function routes(fastify: FastifyInstance, options: any){
                 }),
             }
         },
-        onRequest: [fastify.queryAllowed],
-        preValidation: [fastify.verifyAuth],
+        preValidation: [fastify.verifyAuth, fastify.queryAllowed],
         preHandler: [fastify.isOwner],
     }, async (request, reply) => {
-        console.log(request.user.id);
         const paymentMethods = await server.prisma.paymentMethod.findMany({
             where: {
                 userId: Number(request.params.id),
@@ -127,10 +128,13 @@ async function routes(fastify: FastifyInstance, options: any){
             summary: 'Create a new paymentMethod',
             tags: ['PaymentMethod'],
             body: Type.Object({
+                name: Type.String(),
                 balance: Type.Optional(Type.Number()),
                 status: Type.Optional(Type.Boolean()),
                 tipo: Type.String(),
-                cardNumber: Type.String(),
+                cardNumber: Type.Number({ minimum: 1000000000000, maximum: 9999999999999999 }),
+                CVV: Type.Number({ minimum: 100, maximum: 9999 }),
+                expiryDate: Type.String({ format: 'date' }),
                 bankId: Type.Number(),
                 userId: Type.Optional(Type.Number()),
             }),
@@ -145,48 +149,76 @@ async function routes(fastify: FastifyInstance, options: any){
         },
         preValidation: [fastify.verifyAuth],
     }, async (request, reply) => {
+        //verify expiry date
+        const expiryDate = new Date(request.body.expiryDate);
+        const today = new Date();
+        if (expiryDate < today) {
+            return reply.badRequest("Expiry date is invalid");
+        }
+
+        //get request.body.cardNumber as a string
+        const cardNumber = request.body.cardNumber.toString();
+        const cardNumberFirstDigit = cardNumber.charAt(0);
+        const cardNumberSecondDigit = cardNumber.charAt(1);
+
+        var provider = '';
+        //get card provider
+        if(cardNumberFirstDigit == '4'){
+            provider = 'VISA';
+        }else if(cardNumberFirstDigit == '5'){
+            provider = 'MASTERCARD';
+        }else if(cardNumberFirstDigit == '3' && cardNumberSecondDigit == '4' || cardNumberSecondDigit == '7'){
+            provider = 'AMEX';
+        }else{
+            return reply.badRequest("Invalid card number");
+        }
+
         //verify if the user creating the paymentMethod is admin
         if(request.user.isAdmin){
             //verify balance, status and userId are not null
             if(!request.body.balance || !request.body.status || !request.body.userId){
                 return reply.badRequest("Balance, status and userId are required for admin requests");
             }
-            const paymentMethod = await server.prisma.paymentMethod.create({
-                data: {
-                    balance: request.body.balance,
-                    status: request.body.status,
-                    tipo: request.body.tipo,
-                    cardNumber: request.body.cardNumber,
-                    bankId: request.body.bankId,
-                    userId: request.body.userId,
-                },
-            });
-        }
-
-        //if user isn't admin balance will be 0 and status will be false, also we will use the user id from the token
-        //first we need to validate if the credit card number is visa, mastercard or american express
-        const cardNumber = request.body.cardNumber;
-        const cardNumberFirstDigit = cardNumber.charAt(0);
-        const cardNumberSecondDigit = cardNumber.charAt(1);
-        
-        if(cardNumberFirstDigit == '4'|| (cardNumberFirstDigit == '5' && cardNumberSecondDigit >= '1' && cardNumberSecondDigit <= '5') || (cardNumberFirstDigit == '3' && (cardNumberSecondDigit == '4' || cardNumberSecondDigit == '7'))){
-            //if the credit card number is valid we create the paymentMethod
             try{
                 const paymentMethod = await server.prisma.paymentMethod.create({
                     data: {
-                        balance: 0,
-                        status: false,
+                        name: request.body.name,
+                        balance: request.body.balance,
+                        status: request.body.status,
                         tipo: request.body.tipo,
-                        cardNumber: request.body.cardNumber,
+                        cardNumber: cardNumber,
+                        provider: provider,
+                        CVV: request.body.CVV.toString(),
+                        expiryDate: request.body.expiryDate,
                         bankId: request.body.bankId,
-                        userId: request.user.id,
+                        userId: request.body.userId,
                     },
                 });
-            } catch(error){
-                return reply.badRequest("Error creating paymentMethod");
-            }
-        } else {
-            return reply.badRequest("Credit card number is not valid for Visa, Mastercard or American Express");
+            }catch(error){
+                console.log(error);
+                return reply.badRequest("Unable to create payment method");
+            } 
+        }
+
+        //if user isn't admin balance will be 0 and status will be false, also we will use the user id from the token        
+        try{
+            const paymentMethod = await server.prisma.paymentMethod.create({
+                data: {
+                    name: request.body.name,
+                    balance: 0,
+                    status: false,
+                    tipo: request.body.tipo,
+                    cardNumber: cardNumber,
+                    provider: provider,
+                    CVV: request.body.CVV.toString(),
+                    expiryDate: request.body.expiryDate,
+                    bankId: request.body.bankId,
+                    userId: request.user.id,
+                },
+            });
+        } catch(error){
+            console.log(error);
+            return reply.badRequest("Error creating paymentMethod");
         }
         return { message: 'PaymentMethod created' };
     });
@@ -206,8 +238,7 @@ async function routes(fastify: FastifyInstance, options: any){
                 }),
             }
         },
-        onRequest: [fastify.queryAllowed],
-        preValidation: [fastify.verifyAuth],
+        preValidation: [fastify.verifyAuth, fastify.queryAllowed],
         preHandler: [fastify.isPaymentOwner],
     }, async (request, reply) => {
         const paymentMethod = await server.prisma.paymentMethod.findUnique({

@@ -76,8 +76,7 @@ async function routes(fastify: FastifyInstance, options: any){
                 }),
             }
         },
-        onRequest: [fastify.queryAllowed],
-        preValidation: [fastify.verifyAuth],
+        preValidation: [fastify.verifyAuth, fastify.queryAllowed],
         preHandler: [fastify.isOwner],
     }, async (request, reply) => {
         const transactions = await server.prisma.transaction.findMany({
@@ -110,7 +109,7 @@ async function routes(fastify: FastifyInstance, options: any){
             body: Type.Object({
                 amount: Type.Number(),
                 description: Type.String(),
-                userId: Type.Number(),
+                userId: Type.Optional(Type.Number()),
                 paymentMethodId: Type.Number(),
             }),
             response: {
@@ -122,12 +121,11 @@ async function routes(fastify: FastifyInstance, options: any){
                 }),
             }
         },
-        onRequest: fastify.paymentAllowed,
-        preValidation: fastify.verifyAuth,
+        preValidation: [fastify.verifyAuth, fastify.paymentAllowed],
     }, async (request, reply) => {
-        //verify if userId is the same as the logged user or if the logged user is admin
-        if (request.body.userId !== request.user.id && !request.user.isAdmin) {
-            return reply.badRequest("You can't create a transaction for another user");
+        // if user is not admin, set userId to logged user
+        if (!request.user.isAdmin) {
+            request.body.userId = request.user.id;
         }
 
         const paymentMethod = await server.prisma.paymentMethod.findUnique({

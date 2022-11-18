@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type, Static } from '@sinclair/typebox'
 import bcrypt from 'bcrypt';
+import { request } from 'http';
 
 
 async function routes(fastify: FastifyInstance, options: any) {
@@ -46,17 +47,18 @@ async function routes(fastify: FastifyInstance, options: any) {
         preValidation: [fastify.verifyAuth],
         preHandler: [fastify.isOwner],
     }, async (request, reply) => {
-        const asd = await server.prisma.user.findUnique({
+
+        const user = await server.prisma.user.findUnique({
             where: {
                 id: Number(request.params.id),
             },
         });
         
-        if (!asd) {
+        if (!user) {
             return reply.notFound("User not found");
         }
         
-        return asd;
+        return user;
     });
 
     //only admins can create users for this app

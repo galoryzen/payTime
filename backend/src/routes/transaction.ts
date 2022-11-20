@@ -66,7 +66,7 @@ async function routes(fastify: FastifyInstance, options: any){
             response: {
                 200: Type.Array(Type.Object({
                     id: Type.Number(),
-                    amount: Type.Number(),
+                    amount: Type.Number({ exclusiveMinimum: 0 }),
                     description: Type.String(),
                     status: Type.String(),
                     createdAt: Type.Any(),
@@ -136,8 +136,9 @@ async function routes(fastify: FastifyInstance, options: any){
 
         if (!paymentMethod) {
             return reply.notFound("Payment method not found");
+        }
             
-        } else if (!paymentMethod.status){
+        if (!paymentMethod.status){
             await server.prisma.transaction.create({
                 data: {
                     amount: request.body.amount,
@@ -156,8 +157,31 @@ async function routes(fastify: FastifyInstance, options: any){
                 },
             });
             return reply.badRequest("Rejected, payment method is disabled");
-        } else if (request.body.amount > 0){
-            return reply.badRequest("Payment amount must be greater than 0")
+        } 
+
+        //verify if payment method is expired
+        const expDate = new Date(paymentMethod.expiryDate);
+        const today = new Date();
+
+        if (expDate < today){
+            await server.prisma.transaction.create({
+                data: {
+                    amount: request.body.amount,
+                    description: request.body.description,
+                    status: "Rejected, payment method is expired",
+                    user: {
+                        connect: {
+                            id: Number(request.body.userId),
+                        },
+                    },
+                    paymentMethod: {
+                        connect: {
+                            id: Number(request.body.paymentMethodId),
+                        },
+                    },
+                },
+            });
+            return reply.badRequest("Rejected, payment method is expired");
         }
 
         if (paymentMethod.balance < request.body.amount) {

@@ -3,11 +3,9 @@ import autoLoad from '@fastify/autoload'
 import '@fastify/sensible'
 import path from 'path';
 import cors from '@fastify/cors';
-import fastifyJwt from '@fastify/jwt';
 
 async function main() {
     const fastify = Fastify({ logger: true });
-
 
     fastify.register(require('@fastify/sensible'));
 

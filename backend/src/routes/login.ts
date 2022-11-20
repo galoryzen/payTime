@@ -3,7 +3,7 @@ import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { Type, Static } from '@sinclair/typebox'
 import bcrypt from 'bcrypt';
 
-async function routes(fastify: FastifyInstance, options: any){
+async function routes(fastify: FastifyInstance, options: any) {
     const server = fastify.withTypeProvider<TypeBoxTypeProvider>();
 
     //generate access token
@@ -46,7 +46,12 @@ async function routes(fastify: FastifyInstance, options: any){
             "isAdmin": user.isAdmin,
         }
         const token = server.jwt.sign(payload);
-        reply.send({token});
+        reply.setCookie('token', token, {
+            httpOnly: true,
+            secure: true,
+            path: '/',
+            signed: true,
+        });
     });
 }
 

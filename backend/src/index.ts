@@ -2,15 +2,19 @@ import Fastify from 'fastify';
 import autoLoad from '@fastify/autoload'
 import '@fastify/sensible'
 import path from 'path';
+import cors from '@fastify/cors';
 import fastifyJwt from '@fastify/jwt';
 
 async function main() {
     const fastify = Fastify({ logger: true });
 
-    fastify.register(require('@fastify/auth'));
 
     fastify.register(require('@fastify/sensible'));
 
+    await fastify.register(cors,{
+        credentials: true,
+        origin: 'http://localhost:3001',
+    })
     await fastify.register(autoLoad, {
         dir: path.join(__dirname, 'plugins')
     });
@@ -18,6 +22,8 @@ async function main() {
     await fastify.register(autoLoad, {
         dir: path.join(__dirname, 'routes')
     });
+
+    fastify.register(require('@fastify/auth'));
 
     fastify.listen({ port: 3000 }, function (err: any, address: any) {
         if (err) {

@@ -46,7 +46,7 @@ async function routes(fastify: FastifyInstance, options: any){
             "isAdmin": user.isAdmin,
         }
         const token = server.jwt.sign(payload);
-        return { token };
+        reply.send({token});
     });
 }
 

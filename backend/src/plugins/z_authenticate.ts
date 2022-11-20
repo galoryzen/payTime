@@ -14,7 +14,7 @@ declare module 'fastify' {
 //When used in isOwner, id is the id of the user
 //When used in isPaymentOwner, id is the id of the paymentMethod
 const paramsSchema = Type.Object({
-    id: Type.Number(),
+    id: Type.Optional(Type.Number()),
 });
 
 const authPlugin = fp(async (fastify, opts) => {
@@ -47,7 +47,7 @@ const authPlugin = fp(async (fastify, opts) => {
         }
     });
 
-    //verify if user is admin or owner
+    //Verifies if the user is admin, if not, makes the params id be the logged user id
     //this is a prehandler for all routes that require admin or owner (like modifying a user)
     fastify.decorate('isOwner', async (request: FastifyRequest, reply: FastifyReply) => {
         try{
@@ -61,11 +61,7 @@ const authPlugin = fp(async (fastify, opts) => {
                 return reply.unauthorized('Invalid user');
             }
             if(!user.isAdmin){
-                const { id } = request.params as Static<typeof paramsSchema>;
-
-                if(id != logged_id){
-                    reply.unauthorized("You are not authorized to perform this action");
-                }
+                request.params = { id: logged_id };
             }
         } catch (err) {
             reply.send(err);

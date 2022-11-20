@@ -11,7 +11,11 @@ declare module 'fastify' {
 
 export default fp(async (fastify, opts) => { 
     //Check if query is allowed for user   
-    fastify.decorate('queryAllowed', async (request: FastifyRequest, reply: FastifyReply) => {
+    fastify.decorate('queryAllowed', async (request: FastifyRequest, reply: FastifyReply, done: any) => {
+        if(request.user.isAdmin){
+            done();
+        }
+
         const status = await fastify.prisma.service.findUnique({
             where: {
                 name: "query"
@@ -29,7 +33,11 @@ export default fp(async (fastify, opts) => {
     })
 
     //Check if payment is allowed for user
-    fastify.decorate('paymentAllowed', async (request: FastifyRequest, reply: FastifyReply) => {
+    fastify.decorate('paymentAllowed', async (request: FastifyRequest, reply: FastifyReply, done: any) => {
+        if(request.user.isAdmin){
+            done();
+        }
+
         const status = await fastify.prisma.service.findUnique({
             where: {
                 name: "payment"
@@ -47,7 +55,11 @@ export default fp(async (fastify, opts) => {
     })
 
     //Check if balance query is allowed for user
-    fastify.decorate('balanceAllowed', async (request: FastifyRequest, reply: FastifyReply) => {
+    fastify.decorate('balanceAllowed', async (request: FastifyRequest, reply: FastifyReply, done: any) => {
+        if(request.user.isAdmin){
+            done();
+        }
+        
         const status = await fastify.prisma.service.findUnique({
             where: {
                 name: "balance"

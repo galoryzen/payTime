@@ -24,11 +24,15 @@ model User {
 
 model PaymentMethod {
     id Int @id @default(autoincrement())
+    name String
     cardNumber String @unique
     balance Int
     status Boolean @default(false)
+    provider String
+    CVV String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    expiryDate String
     tipo String
     user User @relation(fields: [userId], references: [id])
     userId Int

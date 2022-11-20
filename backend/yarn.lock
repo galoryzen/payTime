@@ -703,6 +703,22 @@
   dependencies:
     "pkg-up" "^3.1.0"
 
+"@fastify/cookie@^8.3.0":
+  "integrity" "sha512-P9hY9GO11L20TnZ33XN3i0bt+3x0zaT7S0ohAzWO950E9PB2xnNhLYzPFJIGFi5AVN0yr5+/iZhWxeYvR6KCzg=="
+  "resolved" "https://registry.npmjs.org/@fastify/cookie/-/cookie-8.3.0.tgz"
+  "version" "8.3.0"
+  dependencies:
+    "cookie" "^0.5.0"
+    "fastify-plugin" "^4.0.0"
+
+"@fastify/cors@^8.2.0":
+  "integrity" "sha512-qDgwpmg6C4D0D3nh8MTMuRXWyEwPnDZDBODaJv90FP2o9ukbahJByW4FtrM5Bpod5KbTf1oIExBmpItbUTQmHg=="
+  "resolved" "https://registry.npmjs.org/@fastify/cors/-/cors-8.2.0.tgz"
+  "version" "8.2.0"
+  dependencies:
+    "fastify-plugin" "^4.0.0"
+    "mnemonist" "0.39.5"
+
 "@fastify/deepmerge@^1.0.0":
   "integrity" "sha512-E8Hfdvs1bG6u0N4vN5Nty6JONUfTdOciyD5rn8KnEsLKIenvOVcr210BQR9t34PRkNyjqnMLGk3e0BsaxRdL+g=="
   "resolved" "https://registry.npmjs.org/@fastify/deepmerge/-/deepmerge-1.1.0.tgz"
@@ -1098,10 +1114,10 @@
   "resolved" "https://registry.npmjs.org/emoji-regex/-/emoji-regex-8.0.0.tgz"
   "version" "8.0.0"
 
-"env-schema@^5.1.0":
-  "integrity" "sha512-hbu+aC1nddO+tPPgw/guQRNY5CzkgplFu1WbmdiQimy4lcwPCteuKFvxF9uHSU/HkXNlIWR+WC0B53VG21aOxQ=="
-  "resolved" "https://registry.npmjs.org/env-schema/-/env-schema-5.1.0.tgz"
-  "version" "5.1.0"
+"env-schema@^5.1.1":
+  "integrity" "sha512-3jftabBd44XEYFCZjLg5Ris/7DKz09AJClvJEJXh8eciBPbKXSzdgwLZqpqA1lKmNkHFiAqr7JAqTToU80mDew=="
+  "resolved" "https://registry.npmjs.org/env-schema/-/env-schema-5.1.1.tgz"
+  "version" "5.1.1"
   dependencies:
     "ajv" "^8.0.0"
     "dotenv" "^16.0.0"
@@ -1499,7 +1515,7 @@
   "resolved" "https://registry.npmjs.org/mkdirp/-/mkdirp-1.0.4.tgz"
   "version" "1.0.4"
 
-"mnemonist@^0.39.0":
+"mnemonist@^0.39.0", "mnemonist@0.39.5":
   "integrity" "sha512-FPUtkhtJ0efmEFGpU14x7jGbTB+s18LrzRL2KgoWz9YvcY3cPomz8tih01GbHwnGk/OmkOKfqd/RAQoc8Lm7DQ=="
   "resolved" "https://registry.npmjs.org/mnemonist/-/mnemonist-0.39.5.tgz"
   "version" "0.39.5"

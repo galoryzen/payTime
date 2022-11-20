@@ -3,6 +3,9 @@ import NavBar from '../utils/NavBar';
 import Select from 'react-select';
 import Cards from 'react-credit-cards';
 import 'react-credit-cards/es/styles-compiled.css';
+import { Link } from 'react-router-dom';
+import useFetchCards from '../../hooks/useFetchCards';
+import ReactLoading from 'react-loading';
 
 export default function PaymentMethod() {
   const options = [
@@ -78,12 +81,17 @@ export default function PaymentMethod() {
       .trim();
   };
 
+  const { cards: metodosPago, loading } = useFetchCards();
+
   return (
     <div className='h-screen bg-sky-900'>
       <NavBar />
       <div className=' flex items-center flex-col  self-center'>
-        <div className='w-fit gap-x-4 mt-10 flex '>
-          <div className='flex flex-col items-end gap-2 justify-center'>
+        <span className='mt-10 text-2xl font-semibold text-white mb-4'>
+          ¿Deseas agregar un nuevo método de pago?
+        </span>
+        <div className='max-w-3xl px-6 mb-10 bg-black/20 rounded-lg py-6 w-full gap-x-4 flex justify-between'>
+          <div className='flex flex-col items-end gap-2 justify-center select-none'>
             <Cards
               cvc={cvv}
               name={name}
@@ -91,49 +99,15 @@ export default function PaymentMethod() {
               expiry={mesVencimiento + '/' + anoVencimiento}
               focused={focus}
               acceptedCards={['mastercard', 'visa', 'amex']}
+              placeholders={{
+                name: 'NOMBRE APELLIDO',
+              }}
+              locale={{ valid: 'Válido hasta' }}
             />
             <button className='w-fit mt-4 bg-sky-800 h-fit text-white px-4 py-2 rounded-lg font-medium hover:bg-sky-700 transition-all ease-in-out duration-150'>
               Agregar tarjeta
             </button>
           </div>
-          {/* <div class='w-96 h-56 bg-red-100 rounded-xl relative text-white shadow-2xl'>
-            <img
-              class='relative object-cover w-full h-full rounded-xl'
-              src='https://i.imgur.com/kGkSg1v.png'
-              alt='Fondo'
-            />
-
-            <div class='w-full px-8 absolute top-8'>
-              <div class='flex justify-between'>
-                <img
-                  class='w-14 h-14'
-                  src='https://img.icons8.com/color/512/mastercard.png'
-                  alt='Logo'
-                />
-              </div>
-              <div class='pt-1'>
-                <h1 class='font-light'>Número de Tarjeta</h1>
-                <p class='font-medium tracking-more-wider'>
-                  {numTarjeta ? numTarjeta : '**** **** **** ****'}
-                </p>
-              </div>
-              <div class='pt-6 pr-6'>
-                <div class='flex justify-between'>
-                  <div class=''>
-                    <h1 class='font-light text-xs'>Válido hasta</h1>
-                    <p class='font-medium tracking-wider text-sm'>
-                      {mesVencimiento ? mesVencimiento + '/' + anoVencimiento : 'MM/AA'}
-                    </p>
-                  </div>
-                  <div class=''>
-                    <h1 class='font-light text-xs'>CVV</h1>
-                    <p class='font-bold tracking-more-wider text-sm'>{cvv ? cvv : '***'}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> */}
-
           <div className='flex flex-col items-end gap-2'>
             <div className='w-96 px-6 py-6 text-white flex flex-col justify-center gap-2 h-72 bg-[#219EBC26] shadow-lg rounded-3xl'>
               <div className='flex flex-col'>
@@ -144,8 +118,8 @@ export default function PaymentMethod() {
                   onChange={(e) => setName(e.target.value)}
                   type='text'
                   id='nombreTarjeta'
-                  className='bg-white/10 rounded-full px-2 py-1'
-                  placeholder='1111 1111 1111 1111'
+                  className='input'
+                  placeholder='John Doe'
                   onFocus={(e) => setFocus(e.target.name)}
                 />
               </div>
@@ -162,7 +136,7 @@ export default function PaymentMethod() {
                   onChange={(e) => setNumTarjeta(formatCardNumber(e.target.value))}
                   type='number'
                   id='numeroCuenta'
-                  className='bg-white/10 rounded-full px-2 py-1'
+                  className='input'
                   placeholder='1111 1111 1111 1111'
                   onFocus={(e) => setFocus(e.target.name)}
                 />
@@ -194,7 +168,7 @@ export default function PaymentMethod() {
                     onChange={(e) => setCvv(e.target.value)}
                     type='number'
                     id='cvv'
-                    className='bg-white/10 rounded-full w-16 text-center'
+                    className='bg-white/10 rounded-full px-2 py-1 outline-none w-16 text-center'
                     onFocus={(e) => setFocus('cvc')}
                   />
                 </div>
@@ -210,7 +184,7 @@ export default function PaymentMethod() {
                       onChange={(e) => setMesVencimiento(e.target.value)}
                       type='number'
                       id='month'
-                      className='bg-white/10 rounded-full w-12 text-center'
+                      className='input w-12 text-center'
                       placeholder='MM'
                     />
                     <input
@@ -222,7 +196,7 @@ export default function PaymentMethod() {
                       onChange={(e) => setAnoVencimiento(e.target.value)}
                       type='number'
                       id='year'
-                      className='bg-white/10 rounded-full w-12 text-center'
+                      className='input w-12 text-center'
                       placeholder='AA'
                     />
                   </div>
@@ -230,6 +204,29 @@ export default function PaymentMethod() {
               </div>
             </div>
           </div>
+        </div>
+        <h1 className='text-2xl font-semibold text-white'>Métodos de pago</h1>
+        <div className='mt-2 scrollbar-thin scrollbar-thumb-rounded-lg  scrollbar-thumb-black/30 max-w-3xl flex bg-black/20 rounded-lg px-6 py-10 w-full overflow-y-visible overflow-x-auto'>
+          {loading ? (
+            <div className='w-full h-[182.859px] flex justify-center items-center'>
+              <ReactLoading type='bubbles' color='white' height={100} width={100} />
+            </div>
+          ) : (
+            metodosPago.map((metodo, index) => (
+              <div className='select-none w-full -ml-14 hover:mr-14 first:ml-0 transform shadow-2xl hover:translate-x-2 hover:-translate-y-6 hover:-rotate-6 transition-all duration-300 ease-in-out'>
+                <Link to={`/payment-methods/${metodo.id}`} className='-z-40'>
+                  <Cards
+                    preview
+                    cvc={metodo.cvv}
+                    name={metodo.nombre}
+                    number={metodo.numero.replace(/\d{12}/g, '*'.repeat(12))}
+                    // expiry={metodo.mes + '/' + metodo.ano}
+                    issuer={metodo.issuer}
+                  />
+                </Link>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

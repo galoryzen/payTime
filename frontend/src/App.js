@@ -5,6 +5,7 @@ import SignUp from './components/authentication/SignUp.jsx';
 import Pay from './components/views/Pay';
 import Search from './components/views/Search';
 import PaymentMethod from './components/views/PaymentMethod';
+import PaymentMethodDetail from './components/views/PaymentMethodDetail';
 
 function App() {
   return (
@@ -15,7 +16,8 @@ function App() {
         <Route path='/home' element={<Home />} />
         <Route path='/pay' element={<Pay />} />
         <Route path='/search' element={<Search />} />
-        <Route path='/add-payment-method' element={<PaymentMethod />} />
+        <Route path='/payment-methods' element={<PaymentMethod />} />
+        <Route path='/payment-methods/:payment_method_id' element={<PaymentMethodDetail />} />
       </Routes>
     </div>
   );

@@ -8,10 +8,17 @@
   @apply text-black dark:text-white;
 }
 
+html {
+  font-family: 'Work Sans', sans-serif;
+}
 @layer base {
   input[type='number']::-webkit-inner-spin-button,
   input[type='number']::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
+}
+
+.input {
+  @apply bg-white/10 rounded-full px-2 py-1 outline-none;
 }

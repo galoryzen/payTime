@@ -3,9 +3,12 @@ import NavBar from '../utils/NavBar';
 import 'react-credit-cards/es/styles-compiled.css';
 import Cards from 'react-credit-cards';
 import ReturnButton from '../utils/ReturnButton';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import useFetchCard from '../../hooks/useFetchCard';
 import ReactLoading from 'react-loading';
+import Dialog from '../utils/Dialog';
+import axios from 'axios';
+import useToken from '../../hooks/useToken';
 
 export default function PaymentMethodDetail() {
   const icon = {
@@ -14,15 +17,51 @@ export default function PaymentMethodDetail() {
     amex: 'https://img.icons8.com/color/512/amex.png',
   };
 
+  const formatBalance = (balance) => {
+    return balance.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
+  const { token } = useToken();
   const [view, setView] = React.useState(false);
   const params = useParams();
   const id = params.payment_method_id;
   const { card, loading } = useFetchCard(id);
-  console.log(card, loading);
+  const [showDialog, setShowDialog] = React.useState(false);
+  const navigate = useNavigate();
+
+  const handleDelete = () => {
+    axios
+      .delete(`http://localhost:3000/paymentMethod/${id}`, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        navigate('/payment-methods');
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <div className='h-screen bg-sky-900'>
       <NavBar />
+      {!loading && (
+        <Dialog
+          visible={showDialog}
+          setVisible={setShowDialog}
+          type={'confirm'}
+          onConfirm={handleDelete}
+        >
+          {`Desea Eliminar la tarjeta terminada en ${card.cardNumber.substring(12, 16)}?`}
+        </Dialog>
+      )}
+
+      <Dialog></Dialog>
+
       <div className='w-full flex justify-center'>
         <div className='max-w-3xl w-full mt-10'>
           <ReturnButton />
@@ -39,11 +78,18 @@ export default function PaymentMethodDetail() {
               >
                 {view ? <i class='fa-solid fa-eye-slash'></i> : <i class='fa-solid fa-eye'></i>}
               </button>
-              <button className='ml-4 font-medium hover:bg-red-700 duration-200 ease-in-out transition-all bg-red-500 group w-fit px-4 py-2 rounded-full text-base'>
+              <button
+                className='ml-4 font-medium hover:bg-red-700 duration-200 ease-in-out transition-all bg-red-500 group w-fit px-4 py-2 rounded-full text-base'
+                onClick={() => setShowDialog(true)}
+              >
                 <i class='fa-solid fa-trash'></i> Eliminar medio de pago
               </button>
             </h1>
-            <img class='w-14 h-14' src={icon[card.issuer]} alt='Logo' />
+            {loading ? (
+              <div>xd</div>
+            ) : (
+              <img class='w-14 h-14' src={icon[card.provider.toLowerCase()]} alt='Logo' />
+            )}
           </div>
           <div className='flex gap-2 mt-6 w-full items-center select-none'>
             <div className='w-1/2 flex flex-col justify-between h-full items-center'>
@@ -51,17 +97,19 @@ export default function PaymentMethodDetail() {
                 <Cards number='' name=''></Cards>
               ) : (
                 <Cards
-                  name={card.nombre}
-                  number={view ? card.numero : card.numero.replace(/\d{12}/g, '*'.repeat(12))}
+                  name={card.name}
+                  number={
+                    view ? card.cardNumber : card.cardNumber.replace(/\d{12}/g, '*'.repeat(12))
+                  }
                   preview={!view}
-                  issuer={card.issuer}
+                  issuer={card.provider}
                 />
               )}
               <div className='w-[290px]  text-white'>
                 <div className='flex flex-col w-fit mt-3'>
                   <span className='text-base'>Balance:</span>
                   <span className='text-3xl font-semibold'>
-                    ${view ? ' 300 000 000 000' : ' ***'}
+                    ${view ? ` ${formatBalance(card.balance)}` : ' ***'}
                   </span>
                 </div>
               </div>
@@ -81,7 +129,7 @@ export default function PaymentMethodDetail() {
                       type='text'
                       id='nombreTarjeta'
                       className='input select-none'
-                      value={card.nombre}
+                      value={card.name}
                       readOnly
                     />
                   </div>
@@ -94,7 +142,9 @@ export default function PaymentMethodDetail() {
                       type='text'
                       id='numeroCuenta'
                       className='input'
-                      value={view ? card.numero : card.numero.replace(/\d{12}/g, '*'.repeat(12))}
+                      value={
+                        view ? card.cardNumber : card.cardNumber.replace(/\d{12}/g, '*'.repeat(12))
+                      }
                       readOnly
                     />
                   </div>

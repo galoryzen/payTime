@@ -6,11 +6,19 @@ import 'react-credit-cards/es/styles-compiled.css';
 import { Link } from 'react-router-dom';
 import useFetchCards from '../../hooks/useFetchCards';
 import ReactLoading from 'react-loading';
+import axios from 'axios';
+import Dialog from '../utils/Dialog';
+import useToken from '../../hooks/useToken';
+import { useEffect } from 'react';
 
 export default function PaymentMethod() {
   const options = [
-    { value: 'westBank', label: 'West Bank' },
-    { value: 'eastBank', label: 'East Bank' },
+    { value: 1, label: 'West Bank' },
+    { value: 2, label: 'East Bank' },
+  ];
+  const cardTypes = [
+    { value: 'CREDITO', label: 'Crédito' },
+    { value: 'DEBITO', label: 'Débito' },
   ];
 
   const stylesSelect = {
@@ -69,23 +77,138 @@ export default function PaymentMethod() {
 
   const [focus, setFocus] = React.useState('');
   const [name, setName] = React.useState('');
+  const [type, setType] = React.useState('');
+  const [bank, setBank] = React.useState(0);
   const [numTarjeta, setNumTarjeta] = React.useState('');
   const [mesVencimiento, setMesVencimiento] = React.useState('');
   const [anoVencimiento, setAnoVencimiento] = React.useState('');
   const [cvv, setCvv] = React.useState('');
+  const [showConfirmDialog, setShowConfirmDialog] = React.useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = React.useState(false);
+  const [showErrorDialog, setShowErrorDialog] = React.useState(false);
+  const [error, setError] = React.useState('');
+  const [dialogLoading, setDialogLoading] = React.useState(false);
 
   const formatCardNumber = (value) => {
-    return value
-      .replace(/\s/g, '')
-      .replace(/(\d{4})/g, '$1 ')
-      .trim();
+    return value;
   };
 
   const { cards: metodosPago, loading } = useFetchCards();
+  const { token } = useToken();
+  const reload = () => {
+    window.location.reload();
+  };
+
+  const requestCreateCard = async () => {
+    const card = {
+      name: name,
+      tipo: type,
+      cardNumber: numTarjeta.replace(/\s/g, ''),
+      CVV: cvv,
+      expiryDate: `20${anoVencimiento}-${mesVencimiento}-28`,
+      bankId: bank,
+    };
+    console.log(card);
+    setDialogLoading(true);
+    axios
+      .post('http://localhost:3000/paymentMethod', card, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .then(() => {
+        setDialogLoading(false);
+        reload();
+      })
+      .catch((err) => {
+        setError(err.response.data.message);
+        setDialogLoading(false);
+        setShowErrorDialog(true);
+      });
+  };
+
+  const handleCreateCard = (e) => {
+    e.preventDefault();
+    // Validate if card name is not empty
+    if (name === '') {
+      setError('El nombre de la tarjeta no puede estar vacío');
+      setShowErrorDialog(true);
+      return;
+    }
+
+    if (numTarjeta === '' || numTarjeta.length < 16) {
+      setError('El número de la tarjeta no puede estar vacío');
+      setShowErrorDialog(true);
+      return;
+    }
+
+    if (bank === 0) {
+      setError('Debe seleccionar un banco');
+      setShowErrorDialog(true);
+      return;
+    }
+
+    if (type === '') {
+      setError('Debe seleccionar un tipo de tarjeta');
+      setShowErrorDialog(true);
+      return;
+    }
+
+    if (cvv === '' || cvv.length < 3) {
+      setError('El CVV no puede estar vacío');
+      setShowErrorDialog(true);
+      return;
+    }
+
+    if (mesVencimiento === '' || mesVencimiento.length < 2 || mesVencimiento > 12) {
+      setError('El mes de vencimiento no puede estar vacío');
+      setShowErrorDialog(true);
+      return;
+    }
+
+    if (anoVencimiento === '' || anoVencimiento.length < 2 || anoVencimiento < 22) {
+      setError('El año de vencimiento no puede estar vacío');
+      setShowErrorDialog(true);
+      return;
+    }
+    setShowConfirmDialog(true);
+  };
 
   return (
     <div className='h-screen bg-sky-900'>
       <NavBar />
+      <Dialog
+        visible={showConfirmDialog}
+        setVisible={setShowConfirmDialog}
+        loading={dialogLoading}
+        type={'confirm'}
+        onConfirm={requestCreateCard}
+      >
+        {'Desea Crear la tarjeta terminada en ' + numTarjeta.substring(12, 16) + '?'}
+      </Dialog>
+      <Dialog
+        visible={showSuccessDialog}
+        setVisible={setShowSuccessDialog}
+        loading={dialogLoading}
+        type={'success'}
+        onConfirm={reload}
+      >
+        {'Tarjeta creada con éxito'}
+      </Dialog>
+      <Dialog
+        visible={showErrorDialog}
+        setVisible={setShowErrorDialog}
+        loading={dialogLoading}
+        type={'alert'}
+        onConfirm={() => setShowErrorDialog(false)}
+      >
+        {error}
+      </Dialog>
       <div className=' flex items-center flex-col  self-center'>
         <span className='mt-10 text-2xl font-semibold text-white mb-4'>
           ¿Deseas agregar un nuevo método de pago?
@@ -104,12 +227,15 @@ export default function PaymentMethod() {
               }}
               locale={{ valid: 'Válido hasta' }}
             />
-            <button className='w-fit mt-4 bg-sky-800 h-fit text-white px-4 py-2 rounded-lg font-medium hover:bg-sky-700 transition-all ease-in-out duration-150'>
+            <button
+              className='w-fit mt-4 bg-sky-800 h-fit text-white px-4 py-2 rounded-lg font-medium hover:bg-sky-700 transition-all ease-in-out duration-150'
+              onClick={handleCreateCard}
+            >
               Agregar tarjeta
             </button>
           </div>
           <div className='flex flex-col items-end gap-2'>
-            <div className='w-96 px-6 py-6 text-white flex flex-col justify-center gap-2 h-72 bg-[#219EBC26] shadow-lg rounded-3xl'>
+            <div className='w-96 px-6 py-6 text-white flex flex-col justify-center gap-2 h-[88] bg-[#219EBC26] shadow-lg rounded-3xl'>
               <div className='flex flex-col'>
                 <label htmlFor='nombreTarjeta' className='font-light'>
                   Nombre en la tarjeta
@@ -139,6 +265,7 @@ export default function PaymentMethod() {
                   className='input'
                   placeholder='1111 1111 1111 1111'
                   onFocus={(e) => setFocus(e.target.name)}
+                  value={numTarjeta}
                 />
               </div>
               <div className='flex flex-col'>
@@ -152,6 +279,21 @@ export default function PaymentMethod() {
                   className='my-react-select-container'
                   classNamePrefix='my-react-select'
                   options={options}
+                  onChange={(e) => setBank(e.value)}
+                />
+              </div>
+              <div className='flex flex-col'>
+                <label htmlFor='tipoTarjeta' className='font-light'>
+                  Tipo de Tarjeta
+                </label>
+                <Select
+                  id='tipoTarjeta'
+                  placeholder='Seleccione tipo de Tarjeta'
+                  styles={stylesSelect}
+                  className='my-react-select-container'
+                  classNamePrefix='my-react-select'
+                  options={cardTypes}
+                  onChange={(e) => setType(e.value)}
                 />
               </div>
               <div className='flex gap-x-2 w-[90%] justify-between'>
@@ -218,10 +360,10 @@ export default function PaymentMethod() {
                   <Cards
                     preview
                     cvc={metodo.cvv}
-                    name={metodo.nombre}
-                    number={metodo.numero.replace(/\d{12}/g, '*'.repeat(12))}
+                    name={metodo.name}
+                    number={metodo.cardNumber.replace(/\d{12}/g, '*'.repeat(12))}
                     // expiry={metodo.mes + '/' + metodo.ano}
-                    issuer={metodo.issuer}
+                    issuer={metodo.provider.toLowerCase()}
                   />
                 </Link>
               </div>

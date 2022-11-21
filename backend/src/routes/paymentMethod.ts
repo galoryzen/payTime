@@ -232,6 +232,38 @@ async function routes(fastify: FastifyInstance, options: any){
         return { message: 'PaymentMethod created' };
     });
 
+    server.delete('/paymentMethod/:id', {
+        schema: {
+            summary: 'Delete a paymentMethod',
+            tags: ['PaymentMethod'],
+            params: Type.Object({
+                id: Type.Number(),
+            }),
+            response: {
+                200: Type.Object({
+                    message: Type.String(),
+                }),
+                404: Type.Object({
+                    message: Type.String(),
+                }),
+            }
+        },
+        preValidation: [fastify.verifyAuth],
+        preHandler: [fastify.isPaymentOwner],
+    }, async (request, reply) => {
+        const paymentMethod = await server.prisma.paymentMethod.delete({
+            where: {
+                id: Number(request.params.id),
+            },
+        });
+
+        if (!paymentMethod) {
+            return reply.notFound("PaymentMethod not found");
+        }
+
+        return { message: 'PaymentMethod deleted' };
+    });
+
     server.get('/saldo/:id', {
         schema: {
             tags: ['PaymentMethod'],

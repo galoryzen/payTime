@@ -9,6 +9,7 @@ import ReactLoading from 'react-loading';
 import Dialog from '../utils/Dialog';
 import axios from 'axios';
 import useToken from '../../hooks/useToken';
+import Swal from 'sweetalert2';
 
 export default function PaymentMethodDetail() {
   const icon = {
@@ -26,41 +27,78 @@ export default function PaymentMethodDetail() {
   const params = useParams();
   const id = params.payment_method_id;
   const { card, loading } = useFetchCard(id);
-  const [showDialog, setShowDialog] = React.useState(false);
   const navigate = useNavigate();
 
-  const handleDelete = () => {
-    axios
-      .delete(`http://localhost:3000/paymentMethod/${id}`, {
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
+  const showDeleteDialog = () => {
+    Swal.fire({
+      title: `Está seguro que desea eliminar la tarjeta terminada en ${card.cardNumber.slice(12)}?`,
+      text: 'Una vez eliminada la tarjeta, no podrá recuperarla',
+      icon: 'warning',
+      showCancelButton: true,
+      background: '#0C4A6E',
+      color: '#fff',
+      confirmButtonColor: '#FBBF24',
+      confirmButtonText: 'Si, borrala!',
+      cancelButtonText: 'Cancelar',
+      preConfirm: () => {
+        return axios
+          .delete(`http://localhost:3000/paymentMethod/${id}`, {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((response) => {
+            if (response.status !== 200) {
+              throw new Error(response.statusText);
+            }
+          })
+          .catch((error) => {
+            Swal.showValidationMessage(
+              `Algo salió mal! Lo sentimos mucho, por favor intente más tarde`
+            );
+          });
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Tarjeta eliminada!',
+          icon: 'success',
+          background: '#0C4A6E',
+          color: '#fff',
+          confirmButtonColor: '#FBBF24',
+        });
         navigate('/payment-methods');
-      })
-      .catch((error) => {
-        console.log(error);
+      }
+    });
+  };
+
+  const toggleVisibility = (value) => {
+    if (card.balance === -1) {
+      Swal.fire({
+        title: 'Algo salió mal!',
+        text: 'No pudimos obtener el saldo de tu tarjeta, o este no se encuentra disponible por el momento',
+        icon: 'error',
+        background: '#0C4A6E',
+        color: '#fff',
+        confirmButtonColor: '#FBBF24',
       });
+    }
+    setView(value);
+  };
+
+  const showBalance = () => {
+    if (card.balance === -1) {
+      return ' NO DISPONIBLE';
+    } else {
+      return formatBalance(card.balance);
+    }
   };
 
   return (
     <div className='h-screen bg-sky-900'>
       <NavBar />
-      {!loading && (
-        <Dialog
-          visible={showDialog}
-          setVisible={setShowDialog}
-          type={'confirm'}
-          onConfirm={handleDelete}
-        >
-          {`Desea Eliminar la tarjeta terminada en ${card.cardNumber.substring(12, 16)}?`}
-        </Dialog>
-      )}
-
-      <Dialog></Dialog>
 
       <div className='w-full flex justify-center'>
         <div className='max-w-3xl w-full mt-10'>
@@ -74,13 +112,13 @@ export default function PaymentMethodDetail() {
               Detalles
               <button
                 className='ml-4 font-medium h-10 w-10 bg-black/20 hover:bg-black/40 transition-all duration-150 ease-in-out rounded-full text-base'
-                onClick={() => setView(!view)}
+                onClick={() => toggleVisibility(!view)}
               >
                 {view ? <i class='fa-solid fa-eye-slash'></i> : <i class='fa-solid fa-eye'></i>}
               </button>
               <button
                 className='ml-4 font-medium hover:bg-red-700 duration-200 ease-in-out transition-all bg-red-500 group w-fit px-4 py-2 rounded-full text-base'
-                onClick={() => setShowDialog(true)}
+                onClick={showDeleteDialog}
               >
                 <i class='fa-solid fa-trash'></i> Eliminar medio de pago
               </button>
@@ -108,9 +146,7 @@ export default function PaymentMethodDetail() {
               <div className='w-[290px]  text-white'>
                 <div className='flex flex-col w-fit mt-3'>
                   <span className='text-base'>Balance:</span>
-                  <span className='text-3xl font-semibold'>
-                    ${view ? ` ${formatBalance(card.balance)}` : ' ***'}
-                  </span>
+                  <span className='text-3xl font-semibold'>${view ? showBalance() : ' ***'}</span>
                 </div>
               </div>
             </div>

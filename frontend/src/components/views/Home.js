@@ -7,7 +7,19 @@ import useFetchUser from '../../hooks/useFetchUser.js';
 
 function Home() {
 
-  const { user, loading} = useFetchUser();
+  var { user, loading} = useFetchUser();
+
+  if(user !== undefined){
+    localStorage.setItem('user', JSON.stringify(user));
+    console.log(JSON.parse(localStorage.getItem('user')).name);
+  }
+
+  if(user === undefined){
+    user = JSON.parse(localStorage.getItem('user'));
+    
+  }
+
+  console.log(user);
 
   return (
     <div className='min-h-screen bg-sky-900'>

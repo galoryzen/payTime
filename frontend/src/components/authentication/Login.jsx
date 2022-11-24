@@ -14,7 +14,7 @@ function Login() {
   if (token) {
     return <Navigate to='/home' />;
   }
-
+  
   const submitHandler = async (e) => {
     e.preventDefault();
     console.log(user, password);

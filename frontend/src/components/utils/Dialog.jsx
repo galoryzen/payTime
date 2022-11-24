@@ -66,31 +66,29 @@ const Dialog = ({
 
   return (
     <div
-      className={` ${visible ? 'show' : ''} popup bg-black/70 h-screen w-screen absolute z-[49]`}
+      className={` ${visible ? 'show' : ''} popup bg-black/70 h-full top-0 w-full absolute z-[49]`}
     >
-      <div className='flex flex-col items-center justify-between p-3 w-96 h-52 absolute bg-sky-900 border-4 border-sky-800  rounded-lg inset-0 m-auto z-50'>
-        <div className='w-full flex flex-row'>
-          <div className='flex w-full justify-center align-items-center text-white text-3xl'>
-            {optionsSet.title}
-          </div>
-          <div className='flex justify-end'>
-            <button
-              onClick={handleClose}
-              className='h-6 w-6 rounded-full bg-black/60 hover:bg-black/80 flex items-center justify-center'
-            >
-              <i className='text-white text-md fa-solid fa-xmark'></i>
-            </button>
-          </div>
+      <div className='flex flex-col items-center justify-between p-3 w-96 h-56 absolute bg-sky-900 border-4 border-sky-800  rounded-lg inset-0 m-auto z-50'>
+        <div className='w-full flex flex-row justify-end'>
+          <button
+            onClick={handleClose}
+            className='h-6 w-6 rounded-full bg-black/60 hover:bg-black/80 flex items-center justify-center'
+          >
+            <i className='text-white text-md fa-solid fa-xmark'></i>
+          </button>
+        </div>
+        <div className='flex w-full font-medium justify-center align-items-center text-white text-3xl'>
+          {optionsSet.title}
         </div>
         {loading ? (
           <ReactLoading type='bubbles' color='white' height={100} width={100} />
         ) : (
           <>
-            <div className='flex flex-row w-full'>
-              <div className='w-1/6 text-white'>
-                <i className={`${optionsSet.icon} text-5xl`}></i>
+            <div className='flex flex-row w-full justify-center items-center'>
+              <div className='w-[95%] flex'>
+                <i className={`${optionsSet.icon} text-5xl text-white`}></i>
+                <div className=' text-white text-center'>{children}</div>
               </div>
-              <div className='w-5/6 text-white text-center'>{children}</div>
             </div>
             <div className='flex items-center mb-2 justify-center'>
               {optionsSet.showCancel && (

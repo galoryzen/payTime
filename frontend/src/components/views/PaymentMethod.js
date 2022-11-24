@@ -141,7 +141,7 @@ export default function PaymentMethod() {
       return;
     }
 
-    if (numTarjeta === '' || numTarjeta.length < 16) {
+    if (numTarjeta === '' || numTarjeta.length < 14) {
       setError('El número de la tarjeta no puede estar vacío');
       setShowErrorDialog(true);
       return;
@@ -180,7 +180,7 @@ export default function PaymentMethod() {
   };
 
   return (
-    <div className='h-screen bg-sky-900'>
+    <div className='h-screen bg-sky-900 overflow-hidden'>
       <NavBar />
       <Dialog
         visible={showConfirmDialog}
@@ -355,7 +355,7 @@ export default function PaymentMethod() {
             </div>
           ) : (
             metodosPago.map((metodo, index) => (
-              <div className='select-none w-full -ml-14 hover:mr-14 first:ml-0 transform shadow-2xl hover:translate-x-2 hover:-translate-y-6 hover:-rotate-6 transition-all duration-300 ease-in-out'>
+              <div className='select-none bg-transparent w-full -ml-14 hover:mr-14 first:ml-0 transform hover:translate-x-2 hover:-translate-y-6 hover:-rotate-6 transition-all duration-300 ease-in-out'>
                 <Link to={`/payment-methods/${metodo.id}`} className='-z-40'>
                   <Cards
                     preview

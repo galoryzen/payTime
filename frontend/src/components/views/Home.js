@@ -12,7 +12,11 @@ import useFetchCards from '../../hooks/useFetchCards';
 
 function Home() {
 
+  const { user: user, loading: loadingUser } = useFetchUser();
+  const { cards: metodosPago, loading: loadingCards } = useFetchCards();
   const { transactions: transacciones, error: err } = useFetchTransactions();
+
+  localStorage.setItem('user', JSON.stringify(user));
 
   console.log(err)
   if (err) {
@@ -25,26 +29,15 @@ function Home() {
           text: 'Por favor intente más tarde',
     });
   }
-
-  var { user, loading } = useFetchUser();
-  var { cards: metodosPago, load } = useFetchCards();
-
-  if(user !== undefined){
-    localStorage.setItem('user', JSON.stringify(user));
-  }
-
-  if(user === undefined){
-    user = JSON.parse(localStorage.getItem('user')); 
-  }
-
-
+  
   return (
     <div className='min-h-screen bg-sky-900'>
       <NavBar/>
         <div className=''>
           <div className='flex justify-center items-center py-16 gap-32'>
-          <User nombre={user.name} email={user.email}/>
-            {loading ? (
+          {loadingUser ? <ReactLoading type={'spin'} color={'#FBBF24'} height={100} width={100}/> :
+          <User nombre={user.name} email={user.email}/>}
+            {loadingCards ? (
             <div className='w-full h-[182.859px] flex justify-center items-center'>
               <ReactLoading type='bubbles' color='white' height={100} width={100} />
             </div>

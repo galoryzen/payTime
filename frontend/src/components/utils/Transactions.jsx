@@ -1,6 +1,15 @@
 import React from 'react'
 
 export default function DetailsCard({ id, concepto, monto, fecha, sede, estado }) {
+
+    function Estado(estado){
+        if (estado === 'Approved'){
+            return <h5 class="mb-2 text-2xl text-center font-bold text-gray-900 dark:text-green-500">{estado}</h5>
+        }else{
+            return <h5 class="mb-2 text-2xl text-center font-bold text-gray-900 dark:text-red-500">{estado}</h5>
+        }
+    }
+
     return (
     <div class="mt-16 mx-auto w-8/12 text-center bg-white rounded-lg border shadow-md sm:p-8 dark:bg-sky-800 dark:border-cyan-900">
         <h5 class="mb-2 text-4xl text-left font-bold text-gray-900 dark:text-white">
@@ -76,7 +85,7 @@ export default function DetailsCard({ id, concepto, monto, fecha, sede, estado }
                     </td>
                     <td>
                         <h5 class="mb-2 text-2xl text-center font-bold text-gray-900 dark:text-green-500">
-                            {estado}
+                            {Estado(estado)}
                         </h5>
                     </td>
                 </tr>

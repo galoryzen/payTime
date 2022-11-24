@@ -5,6 +5,7 @@ export default fp<SwaggerOptions>(async (server, options) => {
   server.register(require('@fastify/swagger'), {
     ...options,
     exposeRoute: true,
+    routePrefix: '/docs',
     swagger: {
       info: {
         title: 'Galoryzen',
@@ -12,17 +13,9 @@ export default fp<SwaggerOptions>(async (server, options) => {
       },
       schemes: ['http', 'https'],
       tags: [
-        { name: 'Auth', description: 'Login, generación de Token' },
-        { name: 'Example', description: 'Examples' },
+        { name: 'Bank', description: 'Bank related endpoints' },
+        { name: 'Auth', description: 'Login' },
       ],
-      securityDefinitions: {
-        jwt: {
-          description: 'JWT Token en el header Authentication, en el formato `Bearer ${jwt}`',
-          name: 'Authorization',
-          type: 'apiKey',
-          in: 'header',
-        }
-      }
     },
   })
 })

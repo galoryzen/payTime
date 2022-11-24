@@ -5,10 +5,11 @@ import useToken from './useToken';
 export default function useFetchTransactions() {
   const { token } = useToken();
   const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   //fetch
   useEffect(() => {
+    setError(false);
     axios
       .get('http://localhost:3000/transaction/user/1', {
         withCredentials: true,
@@ -20,10 +21,10 @@ export default function useFetchTransactions() {
         console.log(response.data);
         setTransactions(response.data);
       })
-      .then(() => {
-        setLoading(false);
-      });
+      .catch((err) => {
+        setError(true);
+        console.log("Hola");
+      })
   }, []);
-
-  return { transactions, loading };
+  return { transactions, error };
 }

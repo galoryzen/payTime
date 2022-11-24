@@ -170,7 +170,7 @@ async function routes(fastify: FastifyInstance, options: any){
             return reply.badRequest("Rejected, payment method is expired");
         }
 
-        if (paymentMethod.balance < request.body.amount) {
+        if (request.body.amount > paymentMethod.balance) {
             await server.prisma.transaction.update({
                 where: {
                     id: Number(request.body.id),

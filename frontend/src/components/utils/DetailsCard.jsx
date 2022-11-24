@@ -1,6 +1,11 @@
 import React from 'react'
+import { useLocation } from 'react-router-dom'
 
-export default function DetailsCard(props) {
+export default function DetailsCard() {
+    const location = useLocation();
+
+    const data = location.state.data;
+    console.log(data);
     return (
 
     <div class="mt-16 mx-auto w-8/12 text-center bg-white rounded-lg border shadow-md sm:p-8 dark:bg-sky-800 dark:border-cyan-900">
@@ -12,12 +17,12 @@ export default function DetailsCard(props) {
             <tr>
                 <td>
                     <h5 class="mb-2 text-2xl text-left font-bold text-gray-900 dark:text-white">
-                        Referencia
+                        Nombre Completo
                     </h5>
                 </td>
                 <td>
                     <h5 class="mb-2 text-2xl text-center text-gray-900 dark:text-white">
-                        {props.referencia}
+                        {data.nombre}
                     </h5>
                 </td>
             </tr>
@@ -29,7 +34,7 @@ export default function DetailsCard(props) {
                 </td>
                 <td>
                     <h5 class="mb-2 text-2xl text-center text-gray-900 dark:text-white">
-                        {props.concepto}
+                        {data.concepto}
                     </h5>
                 </td>
             </tr>
@@ -41,19 +46,19 @@ export default function DetailsCard(props) {
                 </td>
                 <td>
                     <h5 class="mb-2 text-2xl text-center text-gray-900 dark:text-white">
-                        {props.cantidad}
+                        {data.monto}
                     </h5>
                 </td>
             </tr>
             <tr>
                 <td>
                     <h5 class="mb-2 text-2xl text-left font-bold text-gray-900 dark:text-white">
-                        Fecha
+                        Sede
                     </h5>
                 </td>
                 <td>
                     <h5 class="mb-2 text-2xl text-center text-gray-900 dark:text-white">
-                        {props.fecha}
+                        {data.location}
                     </h5>
                 </td>
             </tr>

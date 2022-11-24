@@ -4,7 +4,7 @@ import createPay from '../utils/createPayment.jsx'
 
 function CreatePay() {
   return (
-    <div className='h-screen bg-sky-900'>
+    <div className='min-h-scree bg-sky-900'>
       <NavBar/>
       <div className='justify-center'>
         <createPay/>

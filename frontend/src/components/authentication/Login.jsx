@@ -36,9 +36,9 @@ function Login() {
   };
 
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 h-screen'>
+    <div className='grid grid-cols-1 sm:grid-cols-2 min-h-screen'>
       <div className='hidden sm:block'>
-        <img className='h-screen object-cover' src={loginImg} alt='logo' />
+        <img className='min-h-screen object-cover' src={loginImg} alt='logo' />
       </div>
 
       <div className='bg-white flex flex-col justify-center'>

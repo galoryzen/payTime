@@ -1,20 +1,16 @@
 import React from 'react'
 import NavBar from '../utils/NavBar.jsx';
-import DetailsCard from '../utils/DetailsCard.jsx';
-import PaymentMethod from '../utils/PaymentMethod';
+import PaymentMethod from '../utils/DetailsCard.jsx';
 
-function Payout() {
+function Transfer() {
   return (
     <div className='min-h-screen bg-sky-900'>
         <NavBar/>
         <div className='justify-center'>
-          <DetailsCard/>
-          <div className=''>
             <PaymentMethod/>
-          </div>
         </div>
     </div>
   )
 }
 
-export default Payout
+export default Transfer

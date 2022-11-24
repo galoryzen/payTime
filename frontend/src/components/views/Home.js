@@ -6,7 +6,7 @@ import LastPayments from '../utils/LastPayments.jsx';
 
 function Home() {
   return (
-    <div className='h-screen bg-sky-900'>
+    <div className='min-h-screen bg-sky-900'>
       <NavBar/>
         <div className=''>
           <div className='flex justify-evenly	py-16'>

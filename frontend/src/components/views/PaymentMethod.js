@@ -9,7 +9,6 @@ import ReactLoading from 'react-loading';
 import axios from 'axios';
 import Dialog from '../utils/Dialog';
 import useToken from '../../hooks/useToken';
-import { useEffect } from 'react';
 
 export default function PaymentMethod() {
   const options = [
@@ -180,7 +179,7 @@ export default function PaymentMethod() {
   };
 
   return (
-    <div className='h-screen bg-sky-900'>
+    <div className='h-full bg-sky-900'>
       <NavBar />
       <Dialog
         visible={showConfirmDialog}

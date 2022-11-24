@@ -66,7 +66,7 @@ const Dialog = ({
 
   return (
     <div
-      className={` ${visible ? 'show' : ''} popup bg-black/70 h-screen w-screen absolute z-[49]`}
+      className={` ${visible ? 'show' : ''} popup bg-black/70  w-screen absolute z-[49]`}
     >
       <div className='flex flex-col items-center justify-between p-3 w-96 h-52 absolute bg-sky-900 border-4 border-sky-800  rounded-lg inset-0 m-auto z-50'>
         <div className='w-full flex flex-row'>

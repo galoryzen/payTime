@@ -67,13 +67,16 @@ function Home() {
           {
             //if transacciones is not empty map it
             transacciones.length > 0 ? transacciones.map((transaction, index) => {
-              return (
-                <LastPayments key={index}
-                concepto={transaction.description} 
-                fecha={new Date(transaction.createdAt).toLocaleDateString()}
-                monto={transaction.amount} 
-                estado={transaction.status}/>
-              )
+              if (index < 3) {
+                return (
+                  <LastPayments key={index}
+                  pos = {index}
+                  concepto={transaction.description} 
+                  fecha={new Date(transaction.createdAt).toLocaleDateString()}
+                  monto={transaction.amount} 
+                  estado={transaction.status}/>
+                )
+              }
             })
             :
             <div className='flex flex-col items-center justify-center h-1/2'>

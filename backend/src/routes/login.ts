@@ -45,7 +45,7 @@ async function routes(fastify: FastifyInstance, options: any) {
             "email": user.email,
             "isAdmin": user.isAdmin,
         }
-        const token = server.jwt.sign(payload);
+        const token = server.jwt.sign(payload, { expiresIn: '1h' });
         return { token };
     });
 }

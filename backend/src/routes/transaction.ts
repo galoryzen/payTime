@@ -179,7 +179,7 @@ async function routes(fastify: FastifyInstance, options: any){
                     status: "Rejected, payment method has insufficient balance",
                 },
             });
-            reply.badRequest("Rejected, payment method has insufficient balance");
+            return reply.badRequest("Rejected, payment method has insufficient balance");
         }
 
         await server.prisma.transaction.update({

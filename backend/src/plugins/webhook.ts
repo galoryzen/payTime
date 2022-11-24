@@ -108,7 +108,7 @@ export default fp (async (fastify, opts) => {
                 continue
             }
 
-            if (paymentMethod.balance < transaction.amount) {
+            if (transaction.amount > paymentMethod.balance) {
                 //create transaction as failed
                 await fastify.prisma.transaction.update({
                     where: {

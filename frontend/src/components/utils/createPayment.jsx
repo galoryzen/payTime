@@ -1,21 +1,37 @@
-import React from "react";
-import { Link } from 'react-router-dom'
+import React, { useState } from "react";
 
-const createPayment = () => {
+export default function CreatePayment(){
+    const [referencia, setReferencia] = useState("");
+    const [concepto, setConcepto] = useState("");
+    const [cantidad, setCantidad] = useState("");
+    const [fecha, setFecha] = useState("");
+    //const [sede, setSede] = useState("");
+
+    const changeReferencia = (e) => {
+        setReferencia(e.target.value);
+    }
+    const changeConcepto = (e) => {
+        setConcepto(e.target.value);
+    }
+    const changeCantidad = (e) => {
+        setCantidad(e.target.value);
+    }
+    const changeFecha = (e) => {
+        setFecha(e.target.value);
+    }
+    //const changeSede = (e) => {
+    //    setSede(e.target.value);
+    //}
+
     return (
-            <form class="mt-16 mx-auto w-8/12 text-center bg-white rounded-lg border shadow-md sm:p-8 dark:bg-sky-800 dark:border-cyan-900">
+            <div>
+                <form class="mt-16 mx-auto w-8/12 text-center bg-white rounded-lg border shadow-md sm:p-8 dark:bg-sky-800 dark:border-cyan-900">
                 <div class="flex flex-wrap -mx-3 mb-6">
-                    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <div class="w-full px-3 mb-6 md:mb-0">
                     <label class="block uppercase tracking-wide text-white text-xs font-bold mb-2" for="grid-first-name">
                         Nombre Completo
                     </label>
                     <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" type="text" name="nombre" id="nombre" placeholder="Nombre Completo"/>
-                    </div>
-                    <div class="w-full md:w-1/2 px-3">
-                    <label class="block uppercase tracking-wide text-white text-xs font-bold mb-2" for="grid-last-name">
-                        Correo electrónico
-                    </label>
-                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" type="email" name="email" id="email" placeholder="Correo Electrónico"/>
                     </div>
                 </div>
                 <div class="flex flex-wrap -mx-3 mb-6">
@@ -27,19 +43,13 @@ const createPayment = () => {
                     </div>
                 </div>
                 <div class="flex flex-wrap -mx-3 mb-2">
-                    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+                    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                     <label class="block uppercase tracking-wide text-white text-xs font-bold mb-2" for="grid-city">
                         Monto a pagar
                     </label>
                     <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-monto" type="number" min="0" placeholder="$"/>
                     </div>
-                    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                    <label class="block uppercase tracking-wide text-white text-xs font-bold mb-2" for="grid-zip">
-                        Número de cuotas
-                    </label>
-                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-cuotas" type="number" min="0" placeholder="0-48"/>
-                    </div>
-                    <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+                    <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                     <label class="block uppercase tracking-wide text-white text-xs font-bold mb-2" for="grid-state">
                         Sede
                     </label>
@@ -56,11 +66,9 @@ const createPayment = () => {
                         </div>
                     </div>
                     </div>
-                    <Link to='/payout' className='text-center text-orange-700 font-bold'>Next</Link>
-                    <button className='w-full my-5 py-2 bg-amber-500 shadow-lg shadow-amber-500/50 hover:shadow-amber-500/40 text-white font-semibold rounded-lg'>Login</button>
+                    <button className='w-full my-5 py-2 bg-amber-500 shadow-lg shadow-amber-500/50 hover:shadow-amber-500/40 text-white font-semibold rounded-lg'>Hacer pago</button>
                 </div>
             </form>
+            </div>
     );
 }
-
-export default createPayment;

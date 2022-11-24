@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 import loginImg from '../../assets/payTime.png';
 import useToken from '../../hooks/useToken';
@@ -71,17 +71,9 @@ function Login() {
               id='password'
             />
           </div>
-          <Link to='/home' className='text-center text-orange-700 font-bold'>
-            Login
-          </Link>
           <button className='w-full my-5 py-2 bg-amber-500 shadow-lg shadow-amber-500/50 hover:shadow-amber-500/40 text-white font-semibold rounded-lg'>
             Login
           </button>
-          <div>
-            <Link to='/signup' className='text-center text-orange-700 font-bold'>
-              ¿No tienes cuenta? Regístrate
-            </Link>
-          </div>
         </form>
       </div>
     </div>

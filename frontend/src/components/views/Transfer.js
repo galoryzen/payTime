@@ -9,6 +9,11 @@ function Transfer() {
         <div className='justify-center'>
             <PaymentMethod/>
         </div>
+        <div className='mt-16 mx-auto w-8/12 text-center bg-white rounded-lg border shadow-md sm:p-8 dark:bg-sky-800 dark:border-cyan-900'>
+            <h1>
+                PaymentMethod
+            </h1>
+        </div>
     </div>
   )
 }

@@ -72,7 +72,6 @@ function Home() {
               if (index < 3) {
                 return (
                   <LastPayments key={index}
-                  pos = {index}
                   concepto={transaction.description} 
                   fecha={new Date(transaction.createdAt).toLocaleDateString()}
                   monto={transaction.amount} 

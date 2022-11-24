@@ -18,12 +18,10 @@ export default function useFetchTransactions() {
         },
       })
       .then((response) => {
-        console.log(response.data);
         setTransactions(response.data);
       })
       .catch((err) => {
         setError(true);
-        console.log("Hola");
       })
   }, []);
   return { transactions, error };

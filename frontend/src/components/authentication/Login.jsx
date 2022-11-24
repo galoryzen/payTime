@@ -9,7 +9,6 @@ function Login() {
   const [password, setPassword] = useState('');
   const { token, setToken } = useToken();
 
-  console.log('token', token);
 
   if (token) {
     return <Navigate to='/home' />;
@@ -17,8 +16,7 @@ function Login() {
   
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log(email, password);
-    axios
+    await axios
       .post(
         'http://localhost:3000/login',
         {
@@ -30,7 +28,6 @@ function Login() {
         }
       )
       .then((res) => {
-        console.log(res.data);
         setToken(res.data);
       });
   };

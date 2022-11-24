@@ -107,7 +107,6 @@ export default function PaymentMethod() {
       expiryDate: `20${anoVencimiento}-${mesVencimiento}-28`,
       bankId: bank,
     };
-    console.log(card);
     setDialogLoading(true);
     axios
       .post('http://localhost:3000/paymentMethod', card, {
@@ -118,7 +117,6 @@ export default function PaymentMethod() {
         },
       })
       .then((res) => {
-        console.log(res);
       })
       .then(() => {
         setDialogLoading(false);

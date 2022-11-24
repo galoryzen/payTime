@@ -5,7 +5,7 @@ import loginImg from '../../assets/payTime.png';
 import useToken from '../../hooks/useToken';
 
 function Login() {
-  const [user, setUser] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { token, setToken } = useToken();
 
@@ -17,12 +17,12 @@ function Login() {
   
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log(user, password);
+    console.log(email, password);
     axios
       .post(
         'http://localhost:3000/login',
         {
-          email: user,
+          email: email,
           password: password,
         },
         {
@@ -53,11 +53,11 @@ function Login() {
             <label htmlFor='email'>Email: </label>
             <input
               className='rounded-lg bg-white mt-2 p-2 shadow-lg shadow-slate-300 border-solid'
-              type='user'
-              name='user'
-              value={user}
-              onChange={(e) => setUser(e.target.value)}
-              id='user'
+              type='email'
+              name='email'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              id='email'
             />
           </div>
           <div className='flex flex-col text-gray-700 py-2'>

@@ -17,11 +17,11 @@ async function routes(fastify: FastifyInstance, options: any){
         }
     }, async (request, reply) => {
         //delete all tables
+        await server.prisma.transaction.deleteMany();
+        await server.prisma.service.deleteMany();
         await server.prisma.paymentMethod.deleteMany();
         await server.prisma.user.deleteMany();
         await server.prisma.bank.deleteMany();
-        await server.prisma.transaction.deleteMany();
-        await server.prisma.service.deleteMany();
 
         await server.prisma.service.create({
             data: {

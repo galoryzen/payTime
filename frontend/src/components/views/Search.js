@@ -3,8 +3,6 @@ import NavBar from '../utils/NavBar.jsx';
 import Transactions from '../utils/Transactions.jsx';
 import useFetchTransactions from '../../hooks/useFetchTransactions';
 import Swal from 'sweetalert2';
-import useToken from '../../hooks/useToken';
-import axios from 'axios';
 
 function Search() {
 

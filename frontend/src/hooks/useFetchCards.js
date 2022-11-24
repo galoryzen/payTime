@@ -17,7 +17,6 @@ export default function useFetchCards() {
         },
       })
       .then((response) => {
-        console.log(response.data);
         setCards(response.data);
       })
       .then(() => {

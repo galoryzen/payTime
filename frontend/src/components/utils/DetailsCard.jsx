@@ -5,7 +5,6 @@ export default function DetailsCard() {
     const location = useLocation();
 
     const data = location.state.data;
-    console.log(data);
     return (
 
     <div class="mt-16 mx-auto w-8/12 text-center bg-white rounded-lg border shadow-md sm:p-8 dark:bg-sky-800 dark:border-cyan-900">

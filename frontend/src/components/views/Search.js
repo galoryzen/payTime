@@ -8,7 +8,6 @@ function Search() {
 
   const { transactions: transacciones, error: err } = useFetchTransactions();
 
-  console.log(err)
   if (err) {
     Swal.fire({
       background: '#0C4A6E',

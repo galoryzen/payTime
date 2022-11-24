@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import useToken from './useToken';
 
-export default function useFetchUser() {
+export default async function useFetchUser() {
   const { token } = useToken();
   const [user, setUser] = useState();
   const [loading, setLoading] = useState(true);
@@ -17,7 +17,6 @@ export default function useFetchUser() {
         },
       })
       .then((response) => {
-        console.log(response.data);
         setUser(response.data);
       })
       .then(() => {

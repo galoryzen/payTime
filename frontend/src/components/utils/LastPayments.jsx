@@ -9,11 +9,6 @@ export default function lastPayments({concepto, fecha, monto, estado}) {
         }
     }
   return (
-    <section class="flex items-center text-white">
-        <div class="container px-5 py-6 mx-auto">
-            <div class="text-left mb-12">
-                <h1 class="text-2xl md:text-6xl font-semibold">Últimos Pagos</h1>
-            </div>
             <div class="flex flex-wrap -m-4">
                 <div class={`p-4 sm:w-1/2 lg:w-1/3`}>
                     <div class="border-2 border-gray-200 border-opacity-60 rounded-lg overflow-hidden">
@@ -21,12 +16,10 @@ export default function lastPayments({concepto, fecha, monto, estado}) {
                             <h2 class="text-2xl font-medium text-amber-400 mb-1">{concepto}</h2>
                             <h1 class="text-2xl font-semibold mb-3">{fecha}</h1>
                             <h1 class="text-4xl font-semibold mb-3">{monto}</h1>
-                            <h2 class="text-2xl font-medium text-green-600 mb-1">{Estado(estado)}</h2>
+                            <h2 class="text-2xl font-medium mb-1">{Estado(estado)}</h2>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
   )
 }

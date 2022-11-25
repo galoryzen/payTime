@@ -32,7 +32,7 @@ function Search() {
                 concepto={transaction.description} 
                 monto={transaction.amount} 
                 fecha={new Date(transaction.createdAt).toLocaleDateString()}
-                sede={"transaction.sede"} 
+                sede={transaction.place} 
                 estado={transaction.status}/>
               )
             })

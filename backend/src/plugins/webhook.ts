@@ -15,6 +15,7 @@ const bodySchema = Type.Object({
     description: Type.String(),
     userId: Type.Optional(Type.Number()),
     paymentMethodId: Type.Number(),
+    place: Type.String(),
 });
 
 export default fp (async (fastify, opts) => {
@@ -45,6 +46,7 @@ export default fp (async (fastify, opts) => {
             data: {
                 amount: body.amount,
                 description: body.description,
+                place: body.place,
                 user : {
                     connect: {
                         id: body.userId,

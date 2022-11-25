@@ -14,6 +14,7 @@ async function routes(fastify: FastifyInstance, options: any){
                     amount: Type.Number(),
                     description: Type.String(),
                     status: Type.String(),
+                    place: Type.String(),
                 })),
             }
         },
@@ -35,6 +36,7 @@ async function routes(fastify: FastifyInstance, options: any){
                     amount: Type.Number(),
                     description: Type.String(),
                     status: Type.String(),
+                    place: Type.String(),
                 }),
                 404: Type.Object({
                     message: Type.String(),
@@ -70,6 +72,7 @@ async function routes(fastify: FastifyInstance, options: any){
                     amount: Type.Number({ exclusiveMinimum: 0 }),
                     description: Type.String(),
                     status: Type.String(),
+                    place: Type.String(),
                     createdAt: Type.Any(),
                 })),
                 404: Type.Object({
@@ -89,6 +92,7 @@ async function routes(fastify: FastifyInstance, options: any){
                 amount: true,
                 description: true,
                 status: true,
+                place: true,
                 createdAt: true,
             },
             orderBy: {
@@ -113,6 +117,7 @@ async function routes(fastify: FastifyInstance, options: any){
                 description: Type.String(),
                 userId: Type.Optional(Type.Number()),
                 paymentMethodId: Type.Number(),
+                place: Type.String(),
             }),
             response: {
                 201: Type.Object({

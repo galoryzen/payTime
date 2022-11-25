@@ -3,17 +3,17 @@ import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 import loginImg from '../../assets/payTime.png';
 import useToken from '../../hooks/useToken';
+import Swal from 'sweetalert2';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { token, setToken } = useToken();
 
-
   if (token) {
     return <Navigate to='/home' />;
   }
-  
+
   const submitHandler = async (e) => {
     e.preventDefault();
     await axios
@@ -29,6 +29,13 @@ function Login() {
       )
       .then((res) => {
         setToken(res.data);
+      })
+      .catch((err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Usuario o contraseña incorrectos',
+        });
       });
   };
 

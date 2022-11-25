@@ -7,8 +7,8 @@ import { Link } from 'react-router-dom';
 import useFetchCards from '../../hooks/useFetchCards';
 import ReactLoading from 'react-loading';
 import axios from 'axios';
-import Dialog from '../utils/Dialog';
 import useToken from '../../hooks/useToken';
+import Swal from 'sweetalert2';
 
 export default function PaymentMethod() {
   const options = [
@@ -82,11 +82,6 @@ export default function PaymentMethod() {
   const [mesVencimiento, setMesVencimiento] = React.useState('');
   const [anoVencimiento, setAnoVencimiento] = React.useState('');
   const [cvv, setCvv] = React.useState('');
-  const [showConfirmDialog, setShowConfirmDialog] = React.useState(false);
-  const [showSuccessDialog, setShowSuccessDialog] = React.useState(false);
-  const [showErrorDialog, setShowErrorDialog] = React.useState(false);
-  const [error, setError] = React.useState('');
-  const [dialogLoading, setDialogLoading] = React.useState(false);
 
   const formatCardNumber = (value) => {
     return value;
@@ -107,6 +102,7 @@ export default function PaymentMethod() {
       expiryDate: `20${anoVencimiento}-${mesVencimiento}-28`,
       bankId: bank,
     };
+    console.log(card);
     setDialogLoading(true);
     axios
       .post('http://localhost:3000/paymentMethod', card, {
@@ -119,93 +115,162 @@ export default function PaymentMethod() {
       .then((res) => {
       })
       .then(() => {
-        setDialogLoading(false);
         reload();
       })
-      .catch((err) => {
-        setError(err.response.data.message);
-        setDialogLoading(false);
-        setShowErrorDialog(true);
-      });
+      .catch((err) => {});
   };
 
   const handleCreateCard = (e) => {
     e.preventDefault();
     // Validate if card name is not empty
     if (name === '') {
-      setError('El nombre de la tarjeta no puede estar vacío');
-      setShowErrorDialog(true);
+      Swal.fire({
+        background: '#0C4A6E',
+        color: '#fff',
+        confirmButtonColor: '#FBBF24',
+        icon: 'error',
+        title: 'Oops...',
+        text: 'El nombre de la tarjeta no puede estar vacío',
+      });
       return;
     }
 
-    if (numTarjeta === '' || numTarjeta.length < 16) {
-      setError('El número de la tarjeta no puede estar vacío');
-      setShowErrorDialog(true);
+    if (numTarjeta === '' || numTarjeta.length < 14) {
+      Swal.fire({
+        background: '#0C4A6E',
+        color: '#fff',
+        confirmButtonColor: '#FBBF24',
+        icon: 'error',
+        title: 'Oops...',
+        text: 'El numero de la tarjeta no puede estar vacío',
+      });
       return;
     }
 
     if (bank === 0) {
-      setError('Debe seleccionar un banco');
-      setShowErrorDialog(true);
+      Swal.fire({
+        background: '#0C4A6E',
+        color: '#fff',
+        confirmButtonColor: '#FBBF24',
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Debe seleccionar un banco',
+      });
       return;
     }
 
     if (type === '') {
-      setError('Debe seleccionar un tipo de tarjeta');
-      setShowErrorDialog(true);
+      Swal.fire({
+        background: '#0C4A6E',
+        color: '#fff',
+        confirmButtonColor: '#FBBF24',
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Debe seleccionar un tipo de tarjeta',
+      });
       return;
     }
 
     if (cvv === '' || cvv.length < 3) {
-      setError('El CVV no puede estar vacío');
-      setShowErrorDialog(true);
+      Swal.fire({
+        background: '#0C4A6E',
+        color: '#fff',
+        confirmButtonColor: '#FBBF24',
+        icon: 'error',
+        title: 'Oops...',
+        text: 'El CVV de la tarjeta no puede estar vacío',
+      });
       return;
     }
 
     if (mesVencimiento === '' || mesVencimiento.length < 2 || mesVencimiento > 12) {
-      setError('El mes de vencimiento no puede estar vacío');
-      setShowErrorDialog(true);
+      Swal.fire({
+        background: '#0C4A6E',
+        color: '#fff',
+        confirmButtonColor: '#FBBF24',
+        icon: 'error',
+        title: 'Oops...',
+        text: 'El mes de vencimiento de la tarjeta no puede estar vacío',
+      });
       return;
     }
 
     if (anoVencimiento === '' || anoVencimiento.length < 2 || anoVencimiento < 22) {
-      setError('El año de vencimiento no puede estar vacío');
-      setShowErrorDialog(true);
+      Swal.fire({
+        background: '#0C4A6E',
+        color: '#fff',
+        confirmButtonColor: '#FBBF24',
+        icon: 'error',
+        title: 'Oops...',
+        text: 'El año de vencimiento de la tarjeta no puede estar vacío',
+      });
       return;
     }
-    setShowConfirmDialog(true);
+    Swal.fire({
+      background: '#0C4A6E',
+      color: '#fff',
+      confirmButtonColor: '#FBBF24',
+      icon: 'question',
+      title: 'Confirme creación de su tarjeta',
+      text: `¿Está seguro que desea crear esta tarjeta terminada en ${numTarjeta.slice(12)}?`,
+      showLoaderOnConfirm: true,
+      showCancelButton: true,
+      confirmButtonText: 'Si',
+      cancelButtonText: 'No',
+      allowOutsideClick: () => !Swal.isLoading(),
+      preConfirm: () => {
+        const card = {
+          name: name,
+          tipo: type,
+          cardNumber: numTarjeta.replace(/\s/g, ''),
+          CVV: cvv,
+          expiryDate: `20${anoVencimiento}-${mesVencimiento}-28`,
+          bankId: bank,
+        };
+        return axios
+          .post('http://localhost:3000/paymentMethod', card, {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((res) => {
+            if (res.status !== 200) {
+              throw new Error(res.message);
+            }
+            return res;
+          })
+          .catch((err) => {
+            Swal.showValidationMessage(`Algo salió mal! Por favor intente más tarde`);
+          });
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          background: '#0C4A6E',
+          color: '#fff',
+          confirmButtonColor: '#FBBF24',
+          icon: 'success',
+          title: 'Tarjeta creada',
+          text: 'Su tarjeta ha sido creada exitosamente',
+        }).then(() => {});
+      } else {
+        Swal.fire({
+          background: '#0C4A6E',
+          color: '#fff',
+          confirmButtonColor: '#FBBF24',
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo crear su tarjeta',
+        });
+      }
+    });
   };
 
   return (
-    <div className='h-full bg-sky-900'>
+    <div className='h-screen bg-sky-900'>
       <NavBar />
-      <Dialog
-        visible={showConfirmDialog}
-        setVisible={setShowConfirmDialog}
-        loading={dialogLoading}
-        type={'confirm'}
-        onConfirm={requestCreateCard}
-      >
-        {'Desea Crear la tarjeta terminada en ' + numTarjeta.substring(12, 16) + '?'}
-      </Dialog>
-      <Dialog
-        visible={showSuccessDialog}
-        setVisible={setShowSuccessDialog}
-        loading={dialogLoading}
-        type={'success'}
-        onConfirm={reload}
-      >
-        {'Tarjeta creada con éxito'}
-      </Dialog>
-      <Dialog
-        visible={showErrorDialog}
-        setVisible={setShowErrorDialog}
-        loading={dialogLoading}
-        type={'alert'}
-        onConfirm={() => setShowErrorDialog(false)}
-      >
-        {error}
-      </Dialog>
       <div className=' flex items-center flex-col  self-center'>
         <span className='mt-10 text-2xl font-semibold text-white mb-4'>
           ¿Deseas agregar un nuevo método de pago?
@@ -352,7 +417,7 @@ export default function PaymentMethod() {
             </div>
           ) : (
             metodosPago.map((metodo, index) => (
-              <div className='select-none w-full -ml-14 hover:mr-14 first:ml-0 transform shadow-2xl hover:translate-x-2 hover:-translate-y-6 hover:-rotate-6 transition-all duration-300 ease-in-out'>
+              <div className='select-none bg-transparent w-full -ml-14 hover:mr-14 first:ml-0 transform hover:translate-x-2 hover:-translate-y-6 hover:-rotate-6 transition-all duration-300 ease-in-out'>
                 <Link to={`/payment-methods/${metodo.id}`} className='-z-40'>
                   <Cards
                     preview

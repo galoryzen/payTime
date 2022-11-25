@@ -191,8 +191,12 @@ export default function PaymentMethodDetail() {
                     <input type='text' id='banco' className='input' defaultValue='East Bank' />
                   </div>
                   <div className='flex w-fit px-4 py-2 rounded-full bg-black/30 items-center mt-4'>
-                    <div className='w-4 h-4 rounded-full bg-red-500 mr-2'></div>
-                    <span>Desactivada</span>
+                    <div
+                      className={`w-4 h-4 rounded-full mr-2 ${
+                        card.status ? 'bg-green-500' : 'bg-red-500'
+                      }`}
+                    ></div>
+                    <span>{card.status ? 'Activada' : 'Desactivada'}</span>
                   </div>
                 </div>
               )}

@@ -93,33 +93,6 @@ export default function PaymentMethod() {
     window.location.reload();
   };
 
-  const requestCreateCard = async () => {
-    const card = {
-      name: name,
-      tipo: type,
-      cardNumber: numTarjeta.replace(/\s/g, ''),
-      CVV: cvv,
-      expiryDate: `20${anoVencimiento}-${mesVencimiento}-28`,
-      bankId: bank,
-    };
-    console.log(card);
-    setDialogLoading(true);
-    axios
-      .post('http://localhost:3000/paymentMethod', card, {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-      })
-      .then(() => {
-        reload();
-      })
-      .catch((err) => {});
-  };
-
   const handleCreateCard = (e) => {
     e.preventDefault();
     // Validate if card name is not empty
@@ -254,7 +227,9 @@ export default function PaymentMethod() {
           icon: 'success',
           title: 'Tarjeta creada',
           text: 'Su tarjeta ha sido creada exitosamente',
-        }).then(() => {});
+        }).then(() => {
+          reload();
+        });
       } else {
         Swal.fire({
           background: '#0C4A6E',

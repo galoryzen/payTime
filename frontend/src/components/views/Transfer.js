@@ -8,10 +8,11 @@ import 'react-credit-cards/es/styles-compiled.css';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import useToken from '../../hooks/useToken.js';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function Transfer() {
   const { cards, loading } = useFetchCards();
+  const nav = useNavigate();
   const [selectedCard, setSelectedCard] = React.useState(null);
 
   const location = useLocation();
@@ -23,6 +24,9 @@ function Transfer() {
     const card = cards[selectedCard];
     console.log(card);
     Swal.fire({
+      background: '#0C4A6E',
+      color: '#fff',
+      confirmButtonColor: '#FBBF24',
       title: 'Confirmar pago',
       text: `¿Estás seguro de realizar el pago de $${data.monto} a ${
         data.nombre
@@ -31,6 +35,58 @@ function Transfer() {
       showCancelButton: true,
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .post(
+            'http://localhost:3000/transaction',
+            {
+              amount: data.monto,
+              description: data.concepto,
+              paymentMethodId: card.id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res.status !== 200) {
+              if (res.status === 503)
+                throw new Error(
+                  'Algo ocurrió en el servidor, su transacción no pudo ser procesada en este momento, pero será procesada en breve. Por favor, manténgase atento a su estado de cuenta'
+                );
+
+              if (res.status === 500)
+                throw new Error('Error interno del servidor, intente más tarde');
+
+              throw new Error('Algo sucedió, lo sentimos, intente más tarde');
+            }
+
+            Swal.fire({
+              background: '#0C4A6E',
+              color: '#fff',
+              confirmButtonColor: '#FBBF24',
+              title: 'Pago realizado',
+              text: 'Su pago ha sido realizado con éxito!',
+              icon: 'success',
+              confirmButtonText: 'Aceptar',
+            }).then(() => {
+              nav('/home');
+            });
+          })
+          .catch((err) => {
+            Swal.fire({
+              background: '#0C4A6E',
+              color: '#fff',
+              confirmButtonColor: '#FBBF24',
+              title: 'Error',
+              text: err.message,
+              icon: 'error',
+            });
+          });
+      }
     });
   };
 
@@ -38,6 +94,9 @@ function Transfer() {
     const card = cards[selectedCard];
     console.log(card);
     Swal.fire({
+      background: '#0C4A6E',
+      color: '#fff',
+      confirmButtonColor: '#FBBF24',
       title: 'Consulta de saldo',
       didOpen: () => {
         Swal.showLoading();
@@ -53,6 +112,9 @@ function Transfer() {
               throw new Error('Error al consultar el saldo');
             }
             Swal.fire({
+              background: '#0C4A6E',
+              color: '#fff',
+              confirmButtonColor: '#FBBF24',
               title: 'Saldo',
               text: `Saldo: ${res.data.saldo}`,
               icon: 'success',
@@ -60,6 +122,9 @@ function Transfer() {
           })
           .catch((err) => {
             Swal.fire({
+              background: '#0C4A6E',
+              color: '#fff',
+              confirmButtonColor: '#FBBF24',
               title: 'Error',
               text: 'Hubo un error al consultar el saldo, por favor intente más tarde',
               icon: 'error',

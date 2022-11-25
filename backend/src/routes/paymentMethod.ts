@@ -77,6 +77,20 @@ async function routes(fastify: FastifyInstance, options: any){
         if (!paymentMethod) {
             return reply.notFound("PaymentMethod not found");
         }
+
+        //check if balance service is available
+        const status = await fastify.prisma.service.findUnique({
+            where: {
+                name: "balance"
+            },
+            select: {
+                status: true
+            }
+        });
+
+        if(!status?.status){
+            paymentMethod.balance = -1;
+        }
         
         return paymentMethod;
     });

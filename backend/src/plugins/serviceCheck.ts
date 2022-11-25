@@ -28,7 +28,7 @@ export default fp(async (fastify, opts) => {
             return reply.notFound("Service not found");
         }
         if(!status.status){
-            reply.serviceUnavailable("Service is currently unavailable");
+            return reply.serviceUnavailable("Service is currently unavailable");
         }
     })
 
@@ -50,7 +50,7 @@ export default fp(async (fastify, opts) => {
             return reply.notFound("Service not found");
         }
         if(!status.status){
-            reply.serviceUnavailable("Service is currently unavailable");
+            return reply.serviceUnavailable("Service is currently unavailable");
         }
     })
 
@@ -72,7 +72,7 @@ export default fp(async (fastify, opts) => {
             return reply.notFound("Service not found");
         }
         if(!status.status){
-            reply.serviceUnavailable("Service is currently unavailable");
+            return reply.serviceUnavailable("Service is currently unavailable");
         }
     })
 })

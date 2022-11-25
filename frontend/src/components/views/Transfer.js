@@ -44,6 +44,7 @@ function Transfer() {
               amount: data.monto,
               description: data.concepto,
               paymentMethodId: card.id,
+              place: data.location,
             },
             {
               headers: {
@@ -52,18 +53,6 @@ function Transfer() {
             }
           )
           .then((res) => {
-            if (res.status !== 200) {
-              if (res.status === 503)
-                throw new Error(
-                  'Algo ocurrió en el servidor, su transacción no pudo ser procesada en este momento, pero será procesada en breve. Por favor, manténgase atento a su estado de cuenta'
-                );
-
-              if (res.status === 500)
-                throw new Error('Error interno del servidor, intente más tarde');
-
-              throw new Error('Algo sucedió, lo sentimos, intente más tarde');
-            }
-
             Swal.fire({
               background: '#0C4A6E',
               color: '#fff',
@@ -75,15 +64,31 @@ function Transfer() {
             }).then(() => {
               nav('/home');
             });
-          })
-          .catch((err) => {
+          },
+          (err) => {
+            const status = err.response.status;
+            console.log(err.response);
+            var message = '';
+            if (status === 503) {
+              message = 'El servicio de pago no se encuentra disponible';
+            } else if (status === 400) {
+              message = err.response.data.message;
+            } else if (status === 500) {
+              message = 'Algo ocurrió en el servidor, su transacción no pudo ser procesada en este momento, pero será procesada en breve. Por favor, manténgase atento a su estado de cuenta';
+            } else {
+              message = 'Error inesperado';
+            }
+
             Swal.fire({
               background: '#0C4A6E',
               color: '#fff',
               confirmButtonColor: '#FBBF24',
               title: 'Error',
-              text: err.message,
+              text: message,
               icon: 'error',
+              confirmButtonText: 'Aceptar',
+            }).then(() => {
+              nav('/home');
             });
           });
       }
@@ -108,9 +113,6 @@ function Transfer() {
             },
           })
           .then((res) => {
-            if (res.status !== 200) {
-              throw new Error('Error al consultar el saldo');
-            }
             Swal.fire({
               background: '#0C4A6E',
               color: '#fff',
@@ -119,14 +121,14 @@ function Transfer() {
               text: `Saldo: ${res.data.saldo}`,
               icon: 'success',
             });
-          })
-          .catch((err) => {
+          },
+          (err) => {
             Swal.fire({
               background: '#0C4A6E',
               color: '#fff',
               confirmButtonColor: '#FBBF24',
               title: 'Error',
-              text: 'Hubo un error al consultar el saldo, por favor intente más tarde',
+              text: 'El servicio para consultar el saldo no se encuentra disponible',
               icon: 'error',
             });
           });

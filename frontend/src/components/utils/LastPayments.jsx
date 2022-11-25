@@ -9,7 +9,6 @@ export default function lastPayments({concepto, fecha, monto, estado}) {
         }
     }
   return (
-            <div class="flex flex-wrap -m-4">
                 <div class={`p-4 sm:w-1/2 lg:w-1/3`}>
                     <div class="border-2 border-gray-200 border-opacity-60 rounded-lg overflow-hidden">
                         <div class="p-6 hover:bg-sky-700 hover:text-white transition duration-300 ease-in">
@@ -20,6 +19,5 @@ export default function lastPayments({concepto, fecha, monto, estado}) {
                         </div>
                     </div>
                 </div>
-            </div>
   )
 }

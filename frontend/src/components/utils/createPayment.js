@@ -87,6 +87,7 @@ export default function CreatePayment() {
               name='monto'
               type='number'
               min='0'
+              max={1000000000}
               placeholder='$'
               onChange={handleInputChange}
             />

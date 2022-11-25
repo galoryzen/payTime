@@ -102,7 +102,7 @@ async function routes(fastify: FastifyInstance, options: any){
                 }),
             }
         },
-        preValidation: [fastify.verifyAuth, fastify.queryAllowed],
+        preValidation: [fastify.verifyAuth],
         preHandler: [fastify.isOwner],
     }, async (request, reply) => {
         const paymentMethods = await server.prisma.paymentMethod.findMany({
@@ -279,7 +279,7 @@ async function routes(fastify: FastifyInstance, options: any){
                 }),
             }
         },
-        preValidation: [fastify.verifyAuth, fastify.queryAllowed],
+        preValidation: [fastify.verifyAuth, fastify.balanceAllowed],
         preHandler: [fastify.isPaymentOwner],
     }, async (request, reply) => {
         const paymentMethod = await server.prisma.paymentMethod.findUnique({

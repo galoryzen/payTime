@@ -97,7 +97,7 @@ export default function PaymentMethodDetail() {
   };
 
   return (
-    <div className='h-screen bg-sky-900'>
+    <div className='min-h-screen bg-sky-900'>
       <NavBar />
 
       <div className='w-full flex justify-center'>

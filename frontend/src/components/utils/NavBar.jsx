@@ -1,6 +1,13 @@
 import logo from '../../assets/Logo.png';
 import { Link } from 'react-router-dom';
 
+//function to logout
+const logout = () => {
+  localStorage.removeItem('token');
+  sessionStorage.removeItem('token');
+  window.location.replace('http://localhost:3001/');
+};
+
 export default function NavBar() {
   return (
     <div className='relative bg-sky-800'>
@@ -38,11 +45,14 @@ export default function NavBar() {
             </label>
           </Link>
           <div className='hidden items-center justify-end md:flex md:flex-1 lg:w-0'>
-            <Link to='/'>
-              <button className='ml-8 inline-flex items-center justify-center whitespace-nowrap rounded-md border border-transparent bg-amber-500 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-amber-600'>
-                Cerrar Sesión
-              </button>
-            </Link>
+            <button
+              type='button'
+              className='cursor-pointer bg-amber-400 rounded-lg px-4 py-2 font-semibold text-sky-800 hover:text-white hover:bg-sky-600 transition-all duration-150'
+              onClick={logout}
+            >
+              <i className='fa-solid fa-sign-out mr-2'></i>
+              Cerrar Sesión
+            </button>
           </div>
         </div>
       </div>

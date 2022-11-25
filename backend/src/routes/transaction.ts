@@ -43,6 +43,7 @@ async function routes(fastify: FastifyInstance, options: any){
         },
         preValidation: [fastify.verifyAuth, fastify.isAdmin],
     }, async (request, reply) => {
+        
         const transaction = await server.prisma.transaction.findUnique({
             where: {
                 id: Number(request.params.id),
@@ -107,6 +108,7 @@ async function routes(fastify: FastifyInstance, options: any){
             summary: 'Create a new transaction',
             tags: ['Transaction'],
             body: Type.Object({
+                id: Type.Optional(Type.Number(),),
                 amount: Type.Number(),
                 description: Type.String(),
                 userId: Type.Optional(Type.Number()),
@@ -122,6 +124,8 @@ async function routes(fastify: FastifyInstance, options: any){
             }
         },
         preValidation: [fastify.verifyAuth, fastify.paymentAllowed],
+        onError: [fastify.processPending],
+        preHandler: [fastify.stashRequest],
     }, async (request, reply) => {
         // if user is not admin, set userId to logged user
         if (!request.user.isAdmin) {
@@ -136,24 +140,15 @@ async function routes(fastify: FastifyInstance, options: any){
 
         if (!paymentMethod) {
             return reply.notFound("Payment method not found");
-        }
-            
+        }  
+
         if (!paymentMethod.status){
-            await server.prisma.transaction.create({
+            await server.prisma.transaction.update({
+                where: {
+                    id: Number(request.body.id),
+                },
                 data: {
-                    amount: request.body.amount,
-                    description: request.body.description,
                     status: "Rejected, payment method is disabled",
-                    user: {
-                        connect: {
-                            id: Number(request.body.userId),
-                        },
-                    },
-                    paymentMethod: {
-                        connect: {
-                            id: Number(request.body.paymentMethodId),
-                        },
-                    },
                 },
             });
             return reply.badRequest("Rejected, payment method is disabled");
@@ -164,63 +159,35 @@ async function routes(fastify: FastifyInstance, options: any){
         const today = new Date();
 
         if (expDate < today){
-            await server.prisma.transaction.create({
+            await server.prisma.transaction.update({
+                where: {
+                    id: Number(request.body.id),
+                },
                 data: {
-                    amount: request.body.amount,
-                    description: request.body.description,
                     status: "Rejected, payment method is expired",
-                    user: {
-                        connect: {
-                            id: Number(request.body.userId),
-                        },
-                    },
-                    paymentMethod: {
-                        connect: {
-                            id: Number(request.body.paymentMethodId),
-                        },
-                    },
                 },
             });
             return reply.badRequest("Rejected, payment method is expired");
         }
 
-        if (paymentMethod.balance < request.body.amount) {
-            await server.prisma.transaction.create({
+        if (request.body.amount > paymentMethod.balance) {
+            await server.prisma.transaction.update({
+                where: {
+                    id: Number(request.body.id),
+                },
                 data: {
-                    amount: request.body.amount,
-                    description: request.body.description,
                     status: "Rejected, payment method has insufficient balance",
-                    user: {
-                        connect: {
-                            id: Number(request.body.userId),
-                        },
-                    },
-                    paymentMethod: {
-                        connect: {
-                            id: Number(request.body.paymentMethodId),
-                        },
-                    },
                 },
             });
-
-            reply.badRequest("Rejected, payment method has insufficient balance");
+            return reply.badRequest("Rejected, payment method has insufficient balance");
         }
 
-        await server.prisma.transaction.create({
+        await server.prisma.transaction.update({
+            where: {
+                id: Number(request.body.id),
+            },
             data: {
-                amount: request.body.amount,
-                description: request.body.description,
-                status: 'Approved',
-                user: {
-                    connect: {
-                        id: Number(request.body.userId),
-                    },
-                },
-                paymentMethod: {
-                    connect: {
-                        id: Number(request.body.paymentMethodId),
-                    },
-                },
+                status: "Approved",
             },
         });
 
@@ -233,8 +200,7 @@ async function routes(fastify: FastifyInstance, options: any){
             },
         });
 
-        reply.code(201);
-        return { message: 'Transaction Approved' };
+        reply.send({ message: "Transaction approved" });
     });
 
 }

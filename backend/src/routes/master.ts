@@ -17,11 +17,11 @@ async function routes(fastify: FastifyInstance, options: any){
         }
     }, async (request, reply) => {
         //delete all tables
+        await server.prisma.transaction.deleteMany();
+        await server.prisma.service.deleteMany();
         await server.prisma.paymentMethod.deleteMany();
         await server.prisma.user.deleteMany();
         await server.prisma.bank.deleteMany();
-        await server.prisma.transaction.deleteMany();
-        await server.prisma.service.deleteMany();
 
         await server.prisma.service.create({
             data: {
@@ -51,7 +51,7 @@ async function routes(fastify: FastifyInstance, options: any){
             data: {
                 id: 1,
                 name: "admin",
-                email: "admin",
+                email: "admin@admin.com",
                 password: await bcrypt.hash("admin", 10),
                 isAdmin: true,
             },
@@ -61,7 +61,7 @@ async function routes(fastify: FastifyInstance, options: any){
             data: {
                 id: 2,
                 name: "user",
-                email: "user",
+                email: "user@user.com",
                 password: await bcrypt.hash("user", 10),
                 isAdmin: false,
             },

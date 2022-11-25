@@ -2,27 +2,27 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import useToken from './useToken';
 
-export default function useFetchCards() {
+export default function useFetchUser() {
   const { token } = useToken();
-  const [cards, setCards] = useState([]);
+  const [user, setUser] = useState();
   const [loading, setLoading] = useState(true);
 
   //fetch
   useEffect(() => {
     axios
-      .get('http://localhost:3000/paymentMethod/user/1', {
+      .get('http://localhost:3000/user/1', {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
-        setCards(response.data);
+        setUser(response.data);
       })
       .then(() => {
         setLoading(false);
       });
   }, []);
 
-  return { cards, loading };
+  return { user, loading };
 }

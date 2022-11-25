@@ -8,7 +8,6 @@ import useFetchCards from '../../hooks/useFetchCards';
 import ReactLoading from 'react-loading';
 import axios from 'axios';
 import useToken from '../../hooks/useToken';
-import { useEffect } from 'react';
 import Swal from 'sweetalert2';
 
 export default function PaymentMethod() {
@@ -104,6 +103,7 @@ export default function PaymentMethod() {
       bankId: bank,
     };
     console.log(card);
+    setDialogLoading(true);
     axios
       .post('http://localhost:3000/paymentMethod', card, {
         withCredentials: true,
@@ -113,7 +113,6 @@ export default function PaymentMethod() {
         },
       })
       .then((res) => {
-        console.log(res);
       })
       .then(() => {
         reload();
@@ -270,7 +269,7 @@ export default function PaymentMethod() {
   };
 
   return (
-    <div className='h-screen bg-sky-900 overflow-hidden'>
+    <div className='h-screen bg-sky-900'>
       <NavBar />
       <div className=' flex items-center flex-col  self-center'>
         <span className='mt-10 text-2xl font-semibold text-white mb-4'>

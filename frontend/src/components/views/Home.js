@@ -93,7 +93,7 @@ function Home() {
                     }
                   })
                     :
-                    <div className='flex flex-col items-center justify-center h-1/2'>
+                    <div className='flex flex-col items-center justify-center h-1/2 py-36'>
                       <h1 className='text-2xl text-white'>No hay transacciones</h1>
                     </div>
                 }

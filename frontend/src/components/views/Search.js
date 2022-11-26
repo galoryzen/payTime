@@ -8,6 +8,10 @@ function Search() {
 
   const { transactions: transacciones, error: err } = useFetchTransactions();
 
+  const formatPaymentAmount = (amount) => {
+    return `$ ${amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}`;
+  };
+
   if (err) {
     Swal.fire({
       background: '#0C4A6E',
@@ -30,7 +34,7 @@ function Search() {
                 <Transactions key={index}
                 id={transaction.id}
                 concepto={transaction.description} 
-                monto={transaction.amount} 
+                monto={formatPaymentAmount(transaction.amount)} 
                 fecha={new Date(transaction.createdAt).toLocaleDateString()}
                 sede={transaction.place} 
                 estado={transaction.status}/>
